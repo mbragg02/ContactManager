@@ -12,7 +12,8 @@ public class PastMeetingImpl extends MeetingImpl implements PastMeeting  {
 		
 	}
 	
-	private void setNotes(String notes) {
+	@Override
+	public void setNotes(String notes) {
 		this.notes = notes;
 	}
 

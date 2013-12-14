@@ -39,4 +39,7 @@ public interface Contact {
 	 */
 	void addNotes(String note);
 
+
+	void addMeeting(Meeting meeting);
+
 }

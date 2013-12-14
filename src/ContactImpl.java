@@ -41,5 +41,10 @@ public class ContactImpl implements Contact {
 	public void addNotes(String note) {
 		this.note = note;
 	}
+	
+	@Override
+	public void addMeeting(Meeting meeting) {
+		this.meetings.add(meeting);
+	}
 
 }

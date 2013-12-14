@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,12 +12,15 @@ public class ContactManagerImpl implements ContactManager {
 	private int meetingId;
 	private List<Contact> contactList;
 	private List<Meeting> meetingList;
+	private List<PastMeeting> pastMeetingList;
+	private Calendar calendar = new GregorianCalendar(); 
 	
 	public ContactManagerImpl() {
 		contactId = 0;
 		meetingId = 0; 
 		contactList = new ArrayList<>();
 		meetingList = new ArrayList<>();
+		pastMeetingList = new ArrayList<>();
 	}
 	
 	// Contacts methods
@@ -67,24 +71,52 @@ public class ContactManagerImpl implements ContactManager {
 	}
 	
 	@Override
-	public void addNewPastMeeting(Set<Contact> contacts, Calendar date,
-			String text) {
-		// TODO Auto-generated method stub
-		
+	public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text) {
+		if (date.getTime().after(calendar.getTime())) {
+			System.out.println("date/time entered was in the futute. A past meetings date must be in the past.");
+		} else {
+			Meeting newPastMeeting = new PastMeetingImpl(meetingId, date, contacts, text);
+			meetingList.add(newPastMeeting);
+			pastMeetingList.add((PastMeeting) newPastMeeting);
+			addMeetingToContacts(contacts, newPastMeeting);
+			System.out.println("Meeting on " + date + " added");
+			
+			meetingId ++;
+		}
+	}
+	
+	private void addMeetingToContacts(Set<Contact> contacts, Meeting meeting) {
+		for (Contact x : contacts) {
+			x.addMeeting(meeting);
+		}
 	}
 
 	@Override
 	public void addMeetingNotes(int id, String text) {
-		// TODO Auto-generated method stub
-		
+		pastMeetingList.get(id).setNotes(text);
 	}
+	
+	
 	
 	// Meetings getters
 
 	@Override
 	public PastMeeting getPastMeeting(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		PastMeeting result = null;
+		
+		for (int i = 0; i < pastMeetingList.size(); i ++ ) {
+			
+			if (pastMeetingList.get(i).getId() == id) {
+				result = pastMeetingList.get(i);
+			}
+		}
+		
+		if (result != null) {
+			System.out.println("Pastmeeting id = " + result.getId());
+		} else {
+			System.out.println("No meeting found with the id: " + id);
+		}
+		return result;
 	}
 
 	@Override
@@ -95,10 +127,23 @@ public class ContactManagerImpl implements ContactManager {
 
 	@Override
 	public Meeting getMeeting(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		Meeting result = null;
+		
+		for (int i = 0; i < meetingList.size(); i ++) {
+			if(meetingList.get(i).getId() == id) {
+				result = meetingList.get(i);
+			}
+		}
+		if (result != null) {
+			System.out.println("Pastmeeting id = " + result.getId());
+		} else {
+			System.out.println("No meeting found with the id: " + id);
+		}
+		return result;
 	}
 
+	
+	
 	@Override
 	public List<Meeting> getFutureMeetingList(Contact contact) {
 		// TODO Auto-generated method stub
