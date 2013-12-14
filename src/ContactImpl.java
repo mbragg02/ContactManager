@@ -11,6 +11,8 @@ public class ContactImpl implements Contact {
 	public ContactImpl(int id, String name, String note) {
 		setId(id);
 		setName(name);
+		addNotes(note);
+
 	}
 	
 	private void setId(int id) {
@@ -34,7 +36,13 @@ public class ContactImpl implements Contact {
 
 	@Override
 	public String getNotes() {
-		return this.note;
+		String result;
+		if (this.note == null) {
+			result = "";
+		} else {
+			result = this.note;
+		}
+		return result;
 	}
 
 	@Override
