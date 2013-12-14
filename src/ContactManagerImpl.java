@@ -69,11 +69,6 @@ public class ContactManagerImpl implements ContactManager {
 
 	// Meetings setters
 	
-	public void addMeeting() {
-		
-		
-		
-	}
 
 
 	@Override
