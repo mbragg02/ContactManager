@@ -163,4 +163,7 @@ public interface ContactManager {
 	 */
 	void flush();
 
+
+	List<Contact> getContacts();
+
 }
