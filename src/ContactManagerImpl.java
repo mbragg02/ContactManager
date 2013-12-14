@@ -69,8 +69,6 @@ public class ContactManagerImpl implements ContactManager {
 
 	// Meetings setters
 	
-
-
 	@Override
 	public int addFutureMeeting(Set<Contact> contacts, Calendar date) {
 		Meeting newFutureMeeting = null;

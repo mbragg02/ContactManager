@@ -10,12 +10,18 @@ import java.util.Set;
 
 public class Main {
 
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy kk:mm");
-	private ContactManager manager = new ContactManagerImpl();
-	private Scanner in = new Scanner(System.in);
+	private SimpleDateFormat dateFormat;
+	private ContactManager manager;
+	private Scanner in;
+	
+	public Main() {
+		in = new Scanner(System.in);
+		manager = new ContactManagerImpl();
+		dateFormat = new SimpleDateFormat("dd/MM/yyyy kk:mm");
+	}
 
 
-	public static void main(String[] args) throws ParseException {
+	public static void main(String[] args) {
 		Main launcher = new Main();
 		launcher.launch();
 	}
@@ -33,14 +39,14 @@ public class Main {
 			System.out.println("> Enter 4 to view a meetings details");
 			System.out.println("> Enter 5 to add a note to a meeting");
 			System.out.println("> Enter EXIT to exit");
-
+			System.out.print("> ");
+			
 			choice = getUserInput();
-
 
 			if (choice.matches("[0-9]+")) {
 				int choiceNumber = toInteger(choice);
 				if (choiceNumber > 5 || choiceNumber < 1) {
-					System.out.println("Not a valid option.");
+					System.out.println("Not a valid option. Please try again");
 				} else {
 					menu(choiceNumber);
 				}
@@ -77,6 +83,7 @@ public class Main {
 			displayContactDetails();
 			break;
 		case 4: // display a meetings details
+			displayMeetingDetails();
 			break;
 		case 5: // add note to meeting
 			break;
@@ -84,7 +91,7 @@ public class Main {
 			break;
 		}
 	}
-	
+
 	/**
 	 * Choice 1: Add a new contact
 	 * @return void
@@ -92,75 +99,20 @@ public class Main {
 	private void addContact() {
 		System.out.print("Please enter the name for a new contact: ");
 		String name = getUserInput();
-		System.out.print("Now enter and notes you wish to store woth this contact: ");
+		System.out.print("Now enter any notes you wish to store with this contact: ");
 		String notes = getUserInput();
 		manager.addNewContact(name, notes);
-		System.out.println("Thankyou, Your contact has been successfully added.\n");
+		System.out.println(name + " has been successfully added to your contacts\n");
 	}
-	
-	/**
-	 * Choice 3: Display contact details.
-	 * Displays either a single contacts details supplied by their name.
-	 * Or displays multiple contact details supplied by a number of contact IDs
-	 * @return void
-	 */
-	private void displayContactDetails() {
-		System.out.print("Please enter a contact name or a series of contact IDs seperated by commas: ");
-		String input = getUserInput();
-		
-		if (Character.isDigit(input.charAt(0))) {
-			// user has entered ids
-			List<String> idsQuery = Arrays.asList(input.split("\\s*,\\s*"));
-			int [] ids = new int [idsQuery.size()];
-			
-			for (int i = 0; i < idsQuery.size(); i ++ ) {
-				ids[i] = toInteger(idsQuery.get(i));
-			}
-			printContacts(manager.getContacts(ids));
-			
-		} else {
-			// user has entered a string
-			printContacts(manager.getContacts(input));
-		}
-		
-	}
-	
-	/**
-	 * Method to print out a set of contacts
-	 * @param contacts Set<Contact> contacts
-	 */
-	private void printContacts(Set<Contact> contacts) {
-		for (Contact x : contacts) {
-			System.out.println("ID: " + x.getId());
-			System.out.println("Name: " + x.getName());
-			System.out.println("Notes: " + x.getNotes());
-			System.out.println();
-		}
-	}
-	
+
 	/**
 	 * Choice 2: Add new meeting
 	 * Create either a meeting in the past or the future.
 	 * @return void
 	 */
 	private void addMeeting() {
-		boolean running = false;
-		boolean future = false;
-
-
-		do {
-			System.out.print("Would you like to add a future meeting [F], or a meeting that has happened in the past [P]: ");
-			String choice = getUserInput();
-			if (choice.equals("f") || choice.equals("p")) {
-				if (choice.equals("f") ? future = true : false);
-				running = false;
-			} else {
-				System.out.println("Not a valid choice.");
-				running = true;
-			}
-
-		} while (running);
-		
+		boolean future = pastOrFuture();
+	
 		System.out.print("Please list the names of the contacts attending this meeting, seperated by commas: ");
 		String contacts = getUserInput();
 		String[] names = contacts.trim().split("\\s*,\\s*");
@@ -177,7 +129,7 @@ public class Main {
 		System.out.println("New please enter a date for the meeting (DD/MM/YYYY HH:MM): ");
 		String date = getUserInput();
 		Calendar meetingDate = getDate(date);
-		
+
 		if(future) {
 			manager.addFutureMeeting(meetingContacts, meetingDate);
 		} else {
@@ -189,7 +141,85 @@ public class Main {
 		System.out.println("Meeting succesfully scheduled");
 	}
 
+
+	/**
+	 * Choice 3: Display contact details.
+	 * Displays either a single contacts details supplied by their name.
+	 * Or displays multiple contact details supplied by a number of contact IDs
+	 * @return void
+	 */
+	private void displayContactDetails() {
+		System.out.print("Please enter a contact name or a series of contact IDs seperated by commas: ");
+		String input = getUserInput();
+
+		if (Character.isDigit(input.charAt(0))) {
+			// user has entered ids
+			List<String> idsQuery = Arrays.asList(input.split("\\s*,\\s*"));
+			int [] ids = new int [idsQuery.size()];
+
+			for (int i = 0; i < idsQuery.size(); i ++ ) {
+				ids[i] = toInteger(idsQuery.get(i));
+			}
+			printContacts(manager.getContacts(ids));
+
+		} else {
+			// user has entered a string
+			printContacts(manager.getContacts(input));
+		}
+
+	}
+
+
+	/**
+	 * Choice 4: Display Meeting details
+	 */
+	private void displayMeetingDetails() {
+		boolean future = pastOrFuture();
+		if (future) {
+			displayFutureMeeting();
+		} else {
+			displayPastMeeting();
+		}
+	}
 	
+	private void displayFutureMeeting() {
+		
+	}
+	
+	private void displayPastMeeting() {
+		
+	}
+	
+	private boolean pastOrFuture() {
+		boolean running = false;
+		boolean result = false;
+
+		do {
+			System.out.print("For a future meeting type [F], or for a meeting that has happened in the past, [P]: ");
+			String choice = getUserInput();
+			if (choice.equals("f") || choice.equals("p")) {
+				if (choice.equals("f") ? result = true : false);
+				running = false;
+			} else {
+				System.out.println("Not a valid choice. Please try again");
+				running = true;
+			}
+
+		} while (running);
+		
+		return result;
+	}
+	
+	private int toInteger(String str) {
+		int result = Integer.parseInt(str.trim());
+		return result;
+	}
+
+	private String getUserInput() {
+		String result = in.nextLine();
+		return result.trim().toLowerCase();
+	}
+
 	private Calendar getDate(String date) {
 		Calendar calendar = Calendar.getInstance();
 		Date newdate = null;
@@ -202,18 +232,17 @@ public class Main {
 		calendar.setTime(newdate);
 		return calendar;
 	}
-
 	
-	private int toInteger(String str) {
-		int result = Integer.parseInt(str.trim());
-		return result;
+	/**
+	 * Method to print out a set of contacts
+	 * @param contacts Set<Contact> contacts
+	 */
+	private void printContacts(Set<Contact> contacts) {
+		for (Contact x : contacts) {
+			System.out.println("ID: " + x.getId());
+			System.out.println("Name: " + x.getName());
+			System.out.println("Notes: " + x.getNotes());
+			System.out.println();
+		}
 	}
-
-	private String getUserInput() {
-		String result = in.nextLine();
-		return result.trim().toLowerCase();
-	}
-
-
-
 }
