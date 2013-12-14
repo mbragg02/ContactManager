@@ -187,8 +187,25 @@ public class Main {
 	}
 	
 	private void displayPastMeeting() {
-		
+		System.out.print("Please enter either a meeting ID or a contact name to view all of the meetings they have attended: ");
+		String input = getUserInput();
+		if (Character.isDigit(input.charAt(0))) {
+			// an id
+			int id = toInteger(input);
+			printMeeting(manager.getPastMeeting(id));
+		} else {
+			// a contact name
+			for (Contact x : manager.getContacts()) {
+				if(x.getName().equals(input)) {
+					manager.getPastMeetingList(x);
+					// still need to implement getPastMeetingList & getFutureMeetingList
+				}
+			}
+			
+		}
 	}
+	
+	// Supporting methods
 	
 	private boolean pastOrFuture() {
 		boolean running = false;
@@ -244,5 +261,10 @@ public class Main {
 			System.out.println("Notes: " + x.getNotes());
 			System.out.println();
 		}
+	}
+
+	private void printMeeting(Meeting meeting) {
+		System.out.println("Meeting id: " + meeting.getId());
+		System.out.println("on: " + meeting.getDate().getTime());
 	}
 }

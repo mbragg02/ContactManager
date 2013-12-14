@@ -96,7 +96,7 @@ public class ContactManagerImpl implements ContactManager {
 			meetingList.add(newPastMeeting);
 			pastMeetingList.add((PastMeeting) newPastMeeting);
 			addMeetingToContacts(contacts, newPastMeeting);
-			System.out.println("Meeting on " + date + " added");
+			System.out.println("Meeting on " + date.getTime() + " added");
 
 			meetingId ++;
 		}
