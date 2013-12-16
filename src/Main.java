@@ -41,18 +41,13 @@ public class Main {
 			System.out.println("> Enter 4 to view a meetings details");
 			System.out.println("> Enter 5 to add a note to a meeting");
 			System.out.println("> Enter EXIT to exit");
-			System.out.print("> ");
+			System.out.print(": ");
 
 			choice = getUserInput();
 
-			if (choice.matches("[0-9]+")) {
+			if (choice.matches("[0-5]")) {
 				int choiceNumber = toInteger(choice);
-				if (choiceNumber > 5 || choiceNumber < 1) {
-					System.out.println("Not a valid option. Please try again");
-				} else {
-					menu(choiceNumber);
-				}
-
+				menu(choiceNumber);
 			} 
 			else {
 				if (choice.equals("exit")) {
@@ -90,7 +85,8 @@ public class Main {
 		case 5: // add note to meeting
 			addMeetingNote();
 			break;
-		default: // default
+		default: 
+			System.out.println("Input must be between 1 and 5");
 			break;
 		}
 	}
@@ -100,12 +96,16 @@ public class Main {
 	 * @return void
 	 */
 	private void addContact() {
-		System.out.print("Please enter the name for a new contact: ");
-		String name = getUserInput();
-		System.out.print("Now enter any notes you wish to store with this contact: ");
+		String name = "";
+		do {
+			System.out.print("Please enter the name for a new contact: ");
+			name = getUserInput();
+		} while(name.length() < 1);
+
+		System.out.print("Now enter any notes for this contact: ");
 		String notes = getUserInput();
 		manager.addNewContact(name, notes);
-		System.out.println(name + " has been successfully added to your contacts\n");
+		System.out.println(name.toUpperCase() + " has been successfully added to your contacts.\n");
 	}
 
 	/**
@@ -118,27 +118,29 @@ public class Main {
 		Set<Contact> meetingContacts = new HashSet<Contact>();
 		String[] names = null;
 
-
 		do {
 			names = contactsMatcher();
 
 		} while (names == null);
-
-
-
 
 		for (String x : names) {
 			for (Contact y : manager.getContacts(x)) {
 				meetingContacts.add(y);
 				System.out.println(x + " added to meeting.");
 			}
-
 		}
 
+		Calendar meetingDate = null;
+		String date = null;
+		do {
+			System.out.println("Please enter a date for the meeting (DD/MM/YYYY HH:MM): ");
+			date = getUserInput();
+			if(!dateMatcher(date)) {
+				System.out.println("Date not valid. Please try again.");
+			}
+		}while (!dateMatcher(date));
 
-		System.out.println("New please enter a date for the meeting (DD/MM/YYYY HH:MM): ");
-		String date = getUserInput();
-		Calendar meetingDate = getDate(date);
+		meetingDate = getDate(date);
 
 		if(future) {
 			manager.addFutureMeeting(meetingContacts, meetingDate);
@@ -218,6 +220,7 @@ public class Main {
 
 		if (dateMatcher(input)) {
 			// a date
+			
 			printMeetingList(manager.getFutureMeetingList(getDate(input)));
 
 		} else if (Character.isDigit(input.charAt(0))) {
@@ -309,7 +312,7 @@ public class Main {
 	private boolean dateMatcher(String str) {
 		boolean result = false;
 		// DD/MM/YYYY HH/MM
-		Pattern p = Pattern.compile("([0-3][0-1])/([0-1][0-2])/([0-9]{4})\\s([0-2][0-3]):([0-5][0-9])");
+		Pattern p = Pattern.compile("([0-2][1-9]|[1-3]0|31)/(0[1-9]|10|11|12)/([0-9]{4})\\s([0-1][0-9]|2[0-3]):([0-5][0-9])");
 		Matcher m = p.matcher(str);
 		if (m.matches()) {
 			result = true;
