@@ -40,7 +40,7 @@ public class Main {
 			System.out.println("> Enter 3 to view a contacts details");
 			System.out.println("> Enter 4 to view a meetings details");
 			System.out.println("> Enter 5 to add a note to a meeting");
-			System.out.println("> Enter EXIT to exit");
+			System.out.println("> Enter EXIT to close");
 			System.out.print(": ");
 
 			choice = getUserInput();
@@ -51,6 +51,7 @@ public class Main {
 			} 
 			else {
 				if (choice.equals("exit")) {
+					manager.flush();
 					running = false;
 					break;
 				} else {
@@ -228,9 +229,13 @@ public class Main {
 			}
 		} else if (Character.isDigit(input.charAt(0))) {
 			// an id
-			if (manager.getFutureMeeting(toInteger(input)) != null) {
+			try {
 				printMeeting(manager.getFutureMeeting(toInteger(input)));
+
+			} catch(NullPointerException ex) {
+				System.out.println("Nothing to display");
 			}
+		
 		} else {
 			// a contact name
 			if (manager.getContacts(input).isEmpty()) {

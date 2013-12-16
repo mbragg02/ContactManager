@@ -1,8 +1,11 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ContactImpl implements Contact {
+public class ContactImpl implements Contact, Serializable {
+	
+
 
 	private int id;
 	private String name;

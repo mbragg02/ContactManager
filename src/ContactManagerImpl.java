@@ -1,3 +1,11 @@
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -5,8 +13,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 public class ContactManagerImpl implements ContactManager {
+    
+	private static final String FILENAME = "contacts.txt";
 
 	private int contactId;
 	private int meetingId;
@@ -16,12 +25,67 @@ public class ContactManagerImpl implements ContactManager {
 	private Calendar calendar = new GregorianCalendar(); 
 
 	public ContactManagerImpl() {
-		contactId = 0;
-		meetingId = 0; 
-		contactList = new ArrayList<>();
-		meetingList = new ArrayList<>();
-		pastMeetingList = new ArrayList<>();
+		load();
+		// TODO CHECK FUTURE AND PAST MEETINGS
+		
 	}
+
+
+	private void load() {
+		System.out.println("Loading data...");
+		
+	    // file does not exist or is directory or isn't readable
+        if (!new File(FILENAME).exists()) {
+             // initialize structures
+        	contactList = new ArrayList<>();
+    		meetingList = new ArrayList<>();
+    		pastMeetingList = new ArrayList<>();
+    		contactId = 0;
+    		meetingId = 0; 
+        } else
+            try (ObjectInputStream
+                         d = new ObjectInputStream(
+                    new BufferedInputStream(
+                            new FileInputStream(FILENAME)));) {
+            	contactList = (List<Contact>) d.readObject();
+            	meetingList = (List<Meeting>) d.readObject();
+            	pastMeetingList = (List<PastMeeting>) d.readObject();
+            	contactId = contactList.size();
+            	meetingId = contactList.size();
+
+            } catch (IOException | ClassNotFoundException ex) {
+                System.err.println("On read error " + ex);
+            }
+
+
+	}
+
+	/**
+	 * Save all data to disk. 
+	 * 
+	 * This method must be executed when the program is
+	 * closed and when/if the user requests it. 
+	 */
+	@Override
+	public void flush() {
+		System.out.println("Saving data...");
+		try (ObjectOutputStream encode = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(FILENAME)));) {
+			encode.writeObject(contactList);
+			encode.writeObject(meetingList);
+			encode.writeObject(pastMeetingList);
+		} catch (IOException ex) {
+			System.err.println("write error: " + ex);
+		}
+
+	}
+
+
+
+
+
+
+
+
 
 	// Contacts methods
 
@@ -40,6 +104,7 @@ public class ContactManagerImpl implements ContactManager {
 
 		for (int id : ids) {
 			Contact aContact = contactList.get(id);
+			System.out.println(id);
 			// check for null
 			result.add(aContact);
 
@@ -78,6 +143,7 @@ public class ContactManagerImpl implements ContactManager {
 		} else {
 			newFutureMeeting = new FutureMeetingImpl(meetingId, date, contacts);
 			meetingList.add(newFutureMeeting);
+			addMeetingToContacts(contacts, newFutureMeeting);
 			meetingId++;
 			result = newFutureMeeting.getId();
 			System.out.println("Your new meeting has been added with id: " + result);
@@ -148,10 +214,10 @@ public class ContactManagerImpl implements ContactManager {
 				return null;
 			} else {
 				System.out.println("Meeting " + result.getId() + " returned.");
-				return result;
+				
 			}
 		}
-		return null;
+		return result;
 
 
 	}
@@ -167,9 +233,8 @@ public class ContactManagerImpl implements ContactManager {
 				result = meetingList.get(i);
 			}
 		}
-		if (result != null) {
-			System.out.println("Meeting found.");
-		} else {
+		
+		if (result == null) {
 			System.out.println("No meeting found with the id: " + id);
 		}
 		return result;
@@ -201,7 +266,6 @@ public class ContactManagerImpl implements ContactManager {
 
 
 		if (meetings != null) {
-			System.out.println("test 1");
 			for (int i = 0; i < meetings.size(); i ++) {
 				if(meetings.get(i).getDate().getTime().before(calendar.getTime())) {
 					meetings.remove(i);
@@ -209,10 +273,9 @@ public class ContactManagerImpl implements ContactManager {
 			}
 		}
 		if (meetings == null) {
-			System.out.println(contact.getName().toUpperCase() + " has no past meetings to display.");
+			System.out.println(contact.getName().toUpperCase() + " has no meetings to display.");
 			return null;
 		} else {
-			System.out.println("test 2");
 			result = new ArrayList<Meeting>();
 
 			for (Meeting x : meetings) {
@@ -268,16 +331,6 @@ public class ContactManagerImpl implements ContactManager {
 
 
 
-	/**
-	 * Save all data to disk. 
-	 * 
-	 * This method must be executed when the program is
-	 * closed and when/if the user requests it. 
-	 */
-	@Override
-	public void flush() {
-		// TODO Auto-generated method stub
 
-	}
 
 }
