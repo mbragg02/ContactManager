@@ -114,19 +114,26 @@ public class Main {
 	 */
 	private void addMeeting() {
 		boolean future = pastOrFuture();
-
-		System.out.print("Please list the names of the contacts attending this meeting, seperated by commas: ");
-		String contacts = getUserInput();
-		String[] names = contacts.trim().split("\\s*,\\s*");
 		Set<Contact> meetingContacts = new HashSet<Contact>();
-		for (String name : names) {
-			for (Contact x : manager.getContacts()) {
-				if (x.getName().equals(name)) {
-					meetingContacts.add(x);
-					System.out.println(name + " successfully added to the meeting");
-				} 
+		String[] names = null;
+		
+
+		do {
+			names = contactsMatcher();
+
+		} while (names == null);
+
+
+
+
+		for (String x : names) {
+			for (Contact y : manager.getContacts(x)) {
+				meetingContacts.add(y);
+				System.out.println(x + " added to meeting.");
 			}
+
 		}
+
 
 		System.out.println("New please enter a date for the meeting (DD/MM/YYYY HH:MM): ");
 		String date = getUserInput();
@@ -143,183 +150,225 @@ public class Main {
 		System.out.println("Meeting succesfully scheduled");
 	}
 
-
-	/**
-	 * Choice 3: Display contact details.
-	 * Displays either a single contacts details supplied by their name.
-	 * Or displays multiple contact details supplied by a number of contact IDs
-	 * @return void
-	 */
-	private void displayContactDetails() {
-		System.out.print("Please enter a contact name or a series of contact IDs seperated by commas: ");
-		String input = getUserInput();
-
-		if (Character.isDigit(input.charAt(0))) {
-			// user has entered ids
-			List<String> idsQuery = Arrays.asList(input.split("\\s*,\\s*"));
-			int [] ids = new int [idsQuery.size()];
-
-			for (int i = 0; i < idsQuery.size(); i ++ ) {
-				ids[i] = toInteger(idsQuery.get(i));
+	private String[] contactsMatcher() {
+		String[] names = null;
+		String contacts = null;
+		
+		System.out.print("Please list the names of the contacts attending this meeting, seperated by commas: ");
+		contacts = getUserInput();
+		names = contacts.trim().split("\\s*,\\s*");
+		
+		
+		for (String name : names) {
+			if (manager.getContacts(name).size() == 0) {
+				System.out.println(name + " not found");
+				return null;
 			}
-			printContacts(manager.getContacts(ids));
-
-		} else {
-			// user has entered a string
-			printContacts(manager.getContacts(input));
-		}
-
-	}
-
-
-	/**
-	 * Choice 4: Display Meeting details
-	 */
-	private void displayMeetingDetails() {
-		boolean future = pastOrFuture();
-		if (future) {
-			displayFutureMeeting();
-		} else {
-			displayPastMeeting();
-		}
-	}
-
-	private void displayFutureMeeting() {
-		System.out.print("Please enther either a meeting ID, a contact name for meetings they are to attend, or a date one which a meeting is to take place (DD/MM/YYYY HH:MM):  ");
-		String input = getUserInput();
-
-		if (dateMatcher(input)) {
-			// a date
-			manager.getFutureMeetingList(stringToDate(input));
-		} else if (Character.isDigit(input.charAt(0))) {
-			// an id
-			manager.getFutureMeeting(toInteger(input));
-		} else {
-			// a contact name
-			for (Contact x : manager.getContacts(input)) {
-				manager.getFutureMeetingList(x);
+			for (Contact x : manager.getContacts(name)) {
+				if (manager.getContacts().contains(x)) {
+					System.out.println(name + " valid.");
+				} 
 			}
-			
-		}
-
-	}
-
-
-
-	private void displayPastMeeting() {
-		System.out.print("Please enter either a meeting ID or a contact name to view all of the meetings they have attended: ");
-		String input = getUserInput();
-		if (Character.isDigit(input.charAt(0))) {
-			// an id
-			int id = toInteger(input);
-			printMeeting(manager.getPastMeeting(id));
-		} else {
-			// a contact name
-			for (Contact x : manager.getContacts()) {
-				if(x.getName().equals(input)) {					
-					printPastMeetingList(manager.getPastMeetingList(x));
-				}
-			}
-
-		}
-	}
-
-	// Supporting methods
+				
 	
-	private Calendar stringToDate(String str) {
-		Calendar calendar = Calendar.getInstance();
-		Date date = null;
-		try {
-			date = dateFormat.parse(str);
-			calendar.setTime(date);
-		} catch (ParseException e) {
-			System.out
-			.println("Invalid date format");
+				
+		}
+
+
+		return names;
+		}
+
+
+		/**
+		 * Choice 3: Display contact details.
+		 * Displays either a single contacts details supplied by their name.
+		 * Or displays multiple contact details supplied by a number of contact IDs
+		 * @return void
+		 */
+		private void displayContactDetails() {
+			System.out.print("Please enter a contact name or a series of contact IDs seperated by commas: ");
+			String input = getUserInput();
+
+			if (Character.isDigit(input.charAt(0))) {
+				// user has entered ids
+				List<String> idsQuery = Arrays.asList(input.split("\\s*,\\s*"));
+				int [] ids = new int [idsQuery.size()];
+
+				for (int i = 0; i < idsQuery.size(); i ++ ) {
+					ids[i] = toInteger(idsQuery.get(i));
+				}
+				printContacts(manager.getContacts(ids));
+
+			} else {
+				// user has entered a string
+				printContacts(manager.getContacts(input));
+			}
+
+		}
+
+
+		/**
+		 * Choice 4: Display Meeting details
+		 */
+		private void displayMeetingDetails() {
+			boolean future = pastOrFuture();
+			if (future) {
+				displayFutureMeeting();
+			} else {
+				displayPastMeeting();
+			}
+		}
+
+		private void displayFutureMeeting() {
+			System.out.print("Please enther either a meeting ID, a contact name for meetings they are to attend, or a date one which a meeting is to take place (DD/MM/YYYY HH:MM):  ");
+			String input = getUserInput();
+
+			if (dateMatcher(input)) {
+				// a date
+				printMeetingList(manager.getFutureMeetingList(stringToDate(input)));
+
+			} else if (Character.isDigit(input.charAt(0))) {
+				// an id
+				printMeeting(manager.getFutureMeeting(toInteger(input)));
+
+			} else {
+				// a contact name
+				for (Contact x : manager.getContacts(input)) {
+					System.out.println(input);
+					printMeetingList(manager.getFutureMeetingList(x));
+					System.out.println();
+				}
+
+			}
+
+		}
+
+
+
+		private void displayPastMeeting() {
+			System.out.print("Please enter either a meeting ID or a contact name to view all of the meetings they have attended: ");
+			String input = getUserInput();
+			if (Character.isDigit(input.charAt(0))) {
+				// an id
+				int id = toInteger(input);
+				printMeeting(manager.getPastMeeting(id));
+			} else {
+				// a contact name
+				for (Contact x : manager.getContacts()) {
+					if(x.getName().equals(input)) {					
+						printPastMeetingList(manager.getPastMeetingList(x));
+					}
+				}
+
+			}
 		}
 		
-		return calendar;
+		
 
-	}
+		// Supporting methods
 
-	private boolean dateMatcher(String str) {
-		boolean result = false;
-		// DD/MM/YYYY HH/MM
-		Pattern p = Pattern.compile("([0-3][0-1])/([0-1][0-2])/([0-9]{4})\\s([0-2][0-3]):([0-5][0-9])");
-		Matcher m = p.matcher(str);
-		if (m.matches()) {
-			result = true;
-		}
-		return result;
-
-	}
-
-	private boolean pastOrFuture() {
-		boolean running = false;
-		boolean result = false;
-
-		do {
-			System.out.print("For a future meeting type [F], or for a meeting that has happened in the past, [P]: ");
-			String choice = getUserInput();
-			if (choice.equals("f") || choice.equals("p")) {
-				if (choice.equals("f") ? result = true : false);
-				running = false;
-			} else {
-				System.out.println("Not a valid choice. Please try again");
-				running = true;
+		private Calendar stringToDate(String str) {
+			Calendar calendar = Calendar.getInstance();
+			Date date = null;
+			try {
+				date = dateFormat.parse(str);
+				calendar.setTime(date);
+			} catch (ParseException e) {
+				System.out
+				.println("Invalid date format");
 			}
 
-		} while (running);
+			return calendar;
 
-		return result;
-	}
-
-	private int toInteger(String str) {
-		int result = Integer.parseInt(str.trim());
-		return result;
-	}
-
-	private String getUserInput() {
-		String result = in.nextLine();
-		return result.trim().toLowerCase();
-	}
-
-	private Calendar getDate(String date) {
-		Calendar calendar = Calendar.getInstance();
-		Date newdate = null;
-		try {
-			newdate = dateFormat.parse(date);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		calendar.setTime(newdate);
-		return calendar;
-	}
-
-	/**
-	 * Method to print out a set of contacts
-	 * @param contacts Set<Contact> contacts
-	 */
-	private void printContacts(Set<Contact> contacts) {
-		for (Contact x : contacts) {
-			System.out.println("ID: " + x.getId());
-			System.out.println("Name: " + x.getName());
-			System.out.println("Notes: " + x.getNotes());
-			System.out.println();
-		}
-	}
-
-	private void printMeeting(Meeting meeting) {
-		System.out.println("Meeting id: " + meeting.getId());
-		System.out.println("on: " + meeting.getDate().getTime());
-	}
-	private void printPastMeetingList(List<PastMeeting> list) {
-		for (PastMeeting x : list) {
-			System.out.println("Meeting id: " + x.getId());
-			System.out.println("on: " + x.getDate().getTime());
-			System.out.println("notes: " + x.getNotes());
-			System.out.println();
 		}
 
+		private boolean dateMatcher(String str) {
+			boolean result = false;
+			// DD/MM/YYYY HH/MM
+			Pattern p = Pattern.compile("([0-3][0-1])/([0-1][0-2])/([0-9]{4})\\s([0-2][0-3]):([0-5][0-9])");
+			Matcher m = p.matcher(str);
+			if (m.matches()) {
+				result = true;
+			}
+			return result;
+
+		}
+
+		private boolean pastOrFuture() {
+			boolean running = false;
+			boolean result = false;
+
+			do {
+				System.out.print("For a future meeting type [F], or for a meeting that has happened in the past, [P]: ");
+				String choice = getUserInput();
+				if (choice.equals("f") || choice.equals("p")) {
+					if (choice.equals("f") ? result = true : false);
+					running = false;
+				} else {
+					System.out.println("Not a valid choice. Please try again");
+					running = true;
+				}
+
+			} while (running);
+
+			return result;
+		}
+
+		private int toInteger(String str) {
+			int result = Integer.parseInt(str.trim());
+			return result;
+		}
+
+		private String getUserInput() {
+			String result = in.nextLine();
+			return result.trim().toLowerCase();
+		}
+
+		private Calendar getDate(String date) {
+			Calendar calendar = Calendar.getInstance();
+			Date newdate = null;
+			try {
+				newdate = dateFormat.parse(date);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			calendar.setTime(newdate);
+			return calendar;
+		}
+
+		/**
+		 * Method to print out a set of contacts
+		 * @param contacts Set<Contact> contacts
+		 */
+		private void printContacts(Set<Contact> contacts) {
+			for (Contact x : contacts) {
+				System.out.println("ID: " + x.getId());
+				System.out.println("Name: " + x.getName());
+				System.out.println("Notes: " + x.getNotes());
+				System.out.println();
+			}
+		}
+
+		private void printMeeting(Meeting meeting) {
+			System.out.println("Meeting id: " + meeting.getId());
+			System.out.println("on: " + meeting.getDate().getTime());
+		}
+		private void printPastMeetingList(List<PastMeeting> list) {
+			for (PastMeeting x : list) {
+				System.out.println("Meeting id: " + x.getId());
+				System.out.println("on: " + x.getDate().getTime());
+				System.out.println("notes: " + x.getNotes());
+				System.out.println();
+			}
+
+		}
+		private void printMeetingList(List<Meeting> list) {
+			for (Meeting x : list) {
+				System.out.println("Meeting id: " + x.getId());
+				System.out.println("on: " + x.getDate().getTime());
+				System.out.println();
+			}
+
+		}
 	}
-}

@@ -251,6 +251,7 @@ public class ContactManagerImpl implements ContactManager {
 		return result;
 	}
 
+	
 	private List<Meeting> getAllMeetings(Contact contact) {
 		Contact tempContact = contact;
 		List<Meeting> meetings = null;
