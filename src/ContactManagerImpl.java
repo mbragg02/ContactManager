@@ -142,13 +142,18 @@ public class ContactManagerImpl implements ContactManager {
 	public FutureMeeting getFutureMeeting(int id) {
 		FutureMeeting result = (FutureMeeting) getMeeting(id);
 
-		if (result.getDate().getTime().before(calendar.getTime())) {
-			System.out.println("The meeting with the id " + id + " is in past");
-			return null;
-		} else {
-			System.out.println("Meeting " + result.getId() + " returned.");
-			return result;
+		if (result != null) {
+			if (result.getDate().getTime().before(calendar.getTime())) {
+				System.out.println("The meeting with the id " + id + " is in past");
+				return null;
+			} else {
+				System.out.println("Meeting " + result.getId() + " returned.");
+				return result;
+			}
 		}
+		return null;
+
+
 	}
 
 
@@ -192,14 +197,11 @@ public class ContactManagerImpl implements ContactManager {
 	public List<Meeting> getFutureMeetingList(Contact contact) {
 		List<Meeting> meetings = null;
 		List<Meeting> result = null;
-		try {
-			meetings = getAllMeetings(contact);
-		} catch (IllegalArgumentException ex) {
-			System.out.println("Contact does not exist");
-            ex.printStackTrace();
-		}
-		
+		meetings = getAllMeetings(contact);
+
+
 		if (meetings != null) {
+			System.out.println("test 1");
 			for (int i = 0; i < meetings.size(); i ++) {
 				if(meetings.get(i).getDate().getTime().before(calendar.getTime())) {
 					meetings.remove(i);
@@ -207,32 +209,30 @@ public class ContactManagerImpl implements ContactManager {
 			}
 		}
 		if (meetings == null) {
-			System.out.println("No future meetings to display."); 
+			System.out.println(contact.getName().toUpperCase() + " has no past meetings to display.");
 			return null;
 		} else {
+			System.out.println("test 2");
 			result = new ArrayList<Meeting>();
-			
+
 			for (Meeting x : meetings) {
 				result.add((FutureMeeting) x);
 			}
 		}
-		
-		
+
+
 		return result;
 	}
 
 	@Override
 	public List<PastMeeting> getPastMeetingList(Contact contact) {
 		List<Meeting> meetings = null;
-		try {
-			meetings = getAllMeetings(contact);
-		} catch (IllegalArgumentException ex) {
-			System.out.println("Contact does not exist");
-            ex.printStackTrace();
-		}
-		
+
+		meetings = getAllMeetings(contact);
+
+
 		List<PastMeeting> result = new ArrayList<PastMeeting>();
-		
+
 		if (meetings != null) {
 			for (int i = 0; i < meetings.size(); i ++) {
 				if (meetings.get(i).getDate().getTime().after(calendar.getTime())) {
@@ -241,26 +241,25 @@ public class ContactManagerImpl implements ContactManager {
 			}
 		}
 		if (meetings == null) {
-			System.out.println(contact + " has no past meetings to display.");
+			System.out.println(contact.getName().toUpperCase() + " has no past meetings to display.");
 		} else {
 			for (Meeting x : meetings) {
 				result.add((PastMeeting) x);
 			}
 		}
-		
+
 		return result;
 	}
 
-	
+
 	private List<Meeting> getAllMeetings(Contact contact) {
 		Contact tempContact = contact;
 		List<Meeting> meetings = null;
 
-		if (tempContact.getMeetings() != null) {
+		if (tempContact.getMeetings().size() != 0) {
 			meetings = tempContact.getMeetings();
-		} else {
-			System.out.println("This user has no meetings stored.");
 		}
+
 		return meetings;
 	}
 

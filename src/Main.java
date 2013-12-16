@@ -180,7 +180,6 @@ public class Main {
 			// user has entered a string
 			printContacts(manager.getContacts(input));
 		}
-
 	}
 
 
@@ -189,6 +188,10 @@ public class Main {
 	 * Gives the user an option for either a past meeting or a future meeting.
 	 */
 	private void displayMeetingDetails() {
+		if (manager.getContacts().isEmpty()) {
+			System.out.println("Your Contacts list empty. Add some contacts and create some meetings first...\n");
+			return;
+		} 
 		boolean future = pastOrFuture();
 		if (future) {
 			displayFutureMeeting();
@@ -220,23 +223,28 @@ public class Main {
 
 		if (dateMatcher(input)) {
 			// a date
-			
-			printMeetingList(manager.getFutureMeetingList(getDate(input)));
-
+			if (manager.getFutureMeetingList(getDate(input)) != null) {
+				printMeetingList(manager.getFutureMeetingList(getDate(input)));
+			}
 		} else if (Character.isDigit(input.charAt(0))) {
 			// an id
-			printMeeting(manager.getFutureMeeting(toInteger(input)));
-
+			if (manager.getFutureMeeting(toInteger(input)) != null) {
+				printMeeting(manager.getFutureMeeting(toInteger(input)));
+			}
 		} else {
 			// a contact name
-			for (Contact x : manager.getContacts(input)) {
-				System.out.println(input);
-				printMeetingList(manager.getFutureMeetingList(x));
-				System.out.println();
+			if (manager.getContacts(input).isEmpty()) {
+				System.out.println("\"" + input + "\" is not one of your contacts.");
+			} else {
+				for (Contact x : manager.getContacts(input)) {
+					if (manager.getFutureMeetingList(x) != null) {
+						printMeetingList(manager.getFutureMeetingList(x));
+					}
+
+				}
 			}
-
 		}
-
+		System.out.println();
 	}
 
 
@@ -246,17 +254,28 @@ public class Main {
 	 * A contact name
 	 */
 	private void displayPastMeeting() {
+
 		System.out.print("Please enter either a meeting ID or a contact name to view all of the meetings they have attended: ");
 		String input = getUserInput();
 		if (Character.isDigit(input.charAt(0))) {
 			// an id
 			int id = toInteger(input);
-			printMeeting(manager.getPastMeeting(id));
+			try {
+				printMeeting(manager.getPastMeeting(id));
+			} catch (NullPointerException ex) {
+				System.out.println("Nothing to print");
+			}
+
 		} else {
 			// a contact name
-			for (Contact x : manager.getContacts()) {
-				if(x.getName().equals(input)) {					
-					printPastMeetingList(manager.getPastMeetingList(x));
+
+			if (manager.getContacts(input).isEmpty()) {
+				System.out.println("\"" + input + "\" is not one of your contacts.");
+			} else {
+				for (Contact x : manager.getContacts()) {
+					if(x.getName().equals(input)) {	
+						printPastMeetingList(manager.getPastMeetingList(x));
+					}
 				}
 			}
 
@@ -269,7 +288,7 @@ public class Main {
 
 
 
-	//		Supporting methods
+	//	Supporting methods
 
 	/**
 	 * Asks the user for a series of contact names (separated by commas).
