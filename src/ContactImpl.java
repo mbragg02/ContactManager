@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -9,6 +10,7 @@ public class ContactImpl implements Contact {
 	private List<Meeting> meetings;
 	
 	public ContactImpl(int id, String name, String note) {
+		meetings = new ArrayList<Meeting>();
 		setId(id);
 		setName(name);
 		addNotes(note);
@@ -52,7 +54,12 @@ public class ContactImpl implements Contact {
 	
 	@Override
 	public void addMeeting(Meeting meeting) {
+		
 		this.meetings.add(meeting);
+	}
+	
+	public List<Meeting> getMeetings() {
+		return this.meetings;
 	}
 
 }

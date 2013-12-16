@@ -7,13 +7,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 
 	private SimpleDateFormat dateFormat;
 	private ContactManager manager;
 	private Scanner in;
-	
+
 	public Main() {
 		in = new Scanner(System.in);
 		manager = new ContactManagerImpl();
@@ -40,7 +42,7 @@ public class Main {
 			System.out.println("> Enter 5 to add a note to a meeting");
 			System.out.println("> Enter EXIT to exit");
 			System.out.print("> ");
-			
+
 			choice = getUserInput();
 
 			if (choice.matches("[0-9]+")) {
@@ -112,7 +114,7 @@ public class Main {
 	 */
 	private void addMeeting() {
 		boolean future = pastOrFuture();
-	
+
 		System.out.print("Please list the names of the contacts attending this meeting, seperated by commas: ");
 		String contacts = getUserInput();
 		String[] names = contacts.trim().split("\\s*,\\s*");
@@ -181,11 +183,29 @@ public class Main {
 			displayPastMeeting();
 		}
 	}
-	
+
 	private void displayFutureMeeting() {
-		
+		System.out.print("Please enther either a meeting ID, a contact name for meetings they are to attend, or a date one which a meeting is to take place (DD/MM/YYYY HH:MM):  ");
+		String input = getUserInput();
+
+		if (dateMatcher(input)) {
+			// a date
+			manager.getFutureMeetingList(stringToDate(input));
+		} else if (Character.isDigit(input.charAt(0))) {
+			// an id
+			manager.getFutureMeeting(toInteger(input));
+		} else {
+			// a contact name
+			for (Contact x : manager.getContacts(input)) {
+				manager.getFutureMeetingList(x);
+			}
+			
+		}
+
 	}
-	
+
+
+
 	private void displayPastMeeting() {
 		System.out.print("Please enter either a meeting ID or a contact name to view all of the meetings they have attended: ");
 		String input = getUserInput();
@@ -196,17 +216,43 @@ public class Main {
 		} else {
 			// a contact name
 			for (Contact x : manager.getContacts()) {
-				if(x.getName().equals(input)) {
-					manager.getPastMeetingList(x);
-					// still need to implement getPastMeetingList & getFutureMeetingList
+				if(x.getName().equals(input)) {					
+					printPastMeetingList(manager.getPastMeetingList(x));
 				}
 			}
-			
+
 		}
 	}
-	
+
 	// Supporting methods
 	
+	private Calendar stringToDate(String str) {
+		Calendar calendar = Calendar.getInstance();
+		Date date = null;
+		try {
+			date = dateFormat.parse(str);
+			calendar.setTime(date);
+		} catch (ParseException e) {
+			System.out
+			.println("Invalid date format");
+		}
+		
+		return calendar;
+
+	}
+
+	private boolean dateMatcher(String str) {
+		boolean result = false;
+		// DD/MM/YYYY HH/MM
+		Pattern p = Pattern.compile("([0-3][0-1])/([0-1][0-2])/([0-9]{4})\\s([0-2][0-3]):([0-5][0-9])");
+		Matcher m = p.matcher(str);
+		if (m.matches()) {
+			result = true;
+		}
+		return result;
+
+	}
+
 	private boolean pastOrFuture() {
 		boolean running = false;
 		boolean result = false;
@@ -223,10 +269,10 @@ public class Main {
 			}
 
 		} while (running);
-		
+
 		return result;
 	}
-	
+
 	private int toInteger(String str) {
 		int result = Integer.parseInt(str.trim());
 		return result;
@@ -249,7 +295,7 @@ public class Main {
 		calendar.setTime(newdate);
 		return calendar;
 	}
-	
+
 	/**
 	 * Method to print out a set of contacts
 	 * @param contacts Set<Contact> contacts
@@ -266,5 +312,14 @@ public class Main {
 	private void printMeeting(Meeting meeting) {
 		System.out.println("Meeting id: " + meeting.getId());
 		System.out.println("on: " + meeting.getDate().getTime());
+	}
+	private void printPastMeetingList(List<PastMeeting> list) {
+		for (PastMeeting x : list) {
+			System.out.println("Meeting id: " + x.getId());
+			System.out.println("on: " + x.getDate().getTime());
+			System.out.println("notes: " + x.getNotes());
+			System.out.println();
+		}
+
 	}
 }

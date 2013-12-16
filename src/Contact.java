@@ -1,3 +1,5 @@
+import java.util.List;
+
 
 /**
  * A contact is a person we are making business with or may do in the future. 
@@ -42,5 +44,8 @@ public interface Contact {
 
 	
 	void addMeeting(Meeting meeting);
+
+
+	List<Meeting> getMeetings();
 
 }

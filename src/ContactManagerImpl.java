@@ -59,7 +59,7 @@ public class ContactManagerImpl implements ContactManager {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public List<Contact> getContacts() {
 		return contactList;
@@ -68,7 +68,7 @@ public class ContactManagerImpl implements ContactManager {
 
 
 	// Meetings setters
-	
+
 	@Override
 	public int addFutureMeeting(Set<Contact> contacts, Calendar date) {
 		Meeting newFutureMeeting = null;
@@ -136,8 +136,8 @@ public class ContactManagerImpl implements ContactManager {
 		return result;
 	}
 
-	
-	
+
+
 	@Override
 	public FutureMeeting getFutureMeeting(int id) {
 		FutureMeeting result = (FutureMeeting) getMeeting(id);
@@ -146,7 +146,7 @@ public class ContactManagerImpl implements ContactManager {
 			System.out.println("The meeting with the id " + id + " is in past");
 			return null;
 		} else {
-			System.out.println("The meeting returned is " + result.getId());
+			System.out.println("Meeting " + result.getId() + " returned.");
 			return result;
 		}
 	}
@@ -163,7 +163,7 @@ public class ContactManagerImpl implements ContactManager {
 			}
 		}
 		if (result != null) {
-			System.out.println("Meeting id = " + result.getId());
+			System.out.println("Meeting found.");
 		} else {
 			System.out.println("No meeting found with the id: " + id);
 		}
@@ -185,17 +185,82 @@ public class ContactManagerImpl implements ContactManager {
 		}	
 		return result;
 	}
-	
-	
-	
+
+
+
 	@Override
 	public List<Meeting> getFutureMeetingList(Contact contact) {
-		return null;
+		List<Meeting> meetings = null;
+		List<Meeting> result = null;
+		try {
+			meetings = getAllMeetings(contact);
+		} catch (IllegalArgumentException ex) {
+			System.out.println("Contact does not exist");
+            ex.printStackTrace();
+		}
+		
+		if (meetings != null) {
+			for (int i = 0; i < meetings.size(); i ++) {
+				if(meetings.get(i).getDate().getTime().before(calendar.getTime())) {
+					meetings.remove(i);
+				}
+			}
+		}
+		if (meetings == null) {
+			System.out.println("No future meetings to display."); 
+			return null;
+		} else {
+			result = new ArrayList<Meeting>();
+			
+			for (Meeting x : meetings) {
+				result.add((FutureMeeting) x);
+			}
+		}
+		
+		
+		return result;
 	}
 
 	@Override
 	public List<PastMeeting> getPastMeetingList(Contact contact) {
-		return null;
+		List<Meeting> meetings = null;
+		try {
+			meetings = getAllMeetings(contact);
+		} catch (IllegalArgumentException ex) {
+			System.out.println("Contact does not exist");
+            ex.printStackTrace();
+		}
+		
+		List<PastMeeting> result = new ArrayList<PastMeeting>();
+		
+		if (meetings != null) {
+			for (int i = 0; i < meetings.size(); i ++) {
+				if (meetings.get(i).getDate().getTime().after(calendar.getTime())) {
+					meetings.remove(i);
+				}
+			}
+		}
+		if (meetings == null) {
+			System.out.println(contact + " has no past meetings to display.");
+		} else {
+			for (Meeting x : meetings) {
+				result.add((PastMeeting) x);
+			}
+		}
+		
+		return result;
+	}
+
+	private List<Meeting> getAllMeetings(Contact contact) {
+		Contact tempContact = contact;
+		List<Meeting> meetings = null;
+
+		if (tempContact.getMeetings() != null) {
+			meetings = tempContact.getMeetings();
+		} else {
+			System.out.println("This user has no meetings stored.");
+		}
+		return meetings;
 	}
 
 
