@@ -189,10 +189,10 @@ public class Main {
 	 * Gives the user an option for either a past meeting or a future meeting.
 	 */
 	private void displayMeetingDetails() {
-		if (manager.getContacts().isEmpty()) {
-			System.out.println("Your Contacts list empty. Add some contacts and create some meetings first...\n");
-			return;
-		} 
+//		if (manager.getContacts().isEmpty()) {
+//			System.out.println("Your Contacts list empty. Add some contacts and create some meetings first...\n");
+//			return;
+//		} 
 		boolean future = pastOrFuture();
 		if (future) {
 			displayFutureMeeting();

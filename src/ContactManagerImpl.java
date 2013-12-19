@@ -9,53 +9,68 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ContactManagerImpl implements ContactManager {
-    
+
 	private static final String FILENAME = "contacts.txt";
 
 	private int contactId;
 	private int meetingId;
-	private List<Contact> contactList;
-	private List<Meeting> meetingList;
-	private List<PastMeeting> pastMeetingList;
+
+	// Contains the contacts 
+	private Map<Integer, Contact> contacts = new HashMap<>();
+
+	// Contains the meetings and their ids
+	private Map<Integer, PastMeeting> pastMeetings = new HashMap<>();
+	private Map<Integer, FutureMeeting> futureMeetings = new HashMap<>();
+
+	// Contains the contacts meetings
+	private Map<Contact, Set<Meeting>> contactsMeetings = new HashMap<>() ;
+	private Map<Contact, Set<PastMeeting>> contactsPastMeetings = new HashMap<>();
+
+	// Contains dates and meetings scheduled for those dates
+	private Map<Calendar, Set<Meeting>> meetingDates = new HashMap<>();
+
 	private Calendar calendar = new GregorianCalendar(); 
 
 	public ContactManagerImpl() {
 		load();
-		// TODO CHECK FUTURE AND PAST MEETINGS
-		
+		// TODO CHECK FUTURE AND PAST MEETINGS are in correct lists
+
 	}
 
 
+	@SuppressWarnings("unchecked")
 	private void load() {
 		System.out.println("Loading data...");
-		
-	    // file does not exist or is directory or isn't readable
-        if (!new File(FILENAME).exists()) {
-             // initialize structures
-        	contactList = new ArrayList<>();
-    		meetingList = new ArrayList<>();
-    		pastMeetingList = new ArrayList<>();
-    		contactId = 0;
-    		meetingId = 0; 
-        } else
-            try (ObjectInputStream
-                         d = new ObjectInputStream(
-                    new BufferedInputStream(
-                            new FileInputStream(FILENAME)));) {
-            	contactList = (List<Contact>) d.readObject();
-            	meetingList = (List<Meeting>) d.readObject();
-            	pastMeetingList = (List<PastMeeting>) d.readObject();
-            	contactId = contactList.size();
-            	meetingId = contactList.size();
 
-            } catch (IOException | ClassNotFoundException ex) {
-                System.err.println("On read error " + ex);
-            }
+		// file does not exist or is directory or isn't readable
+		if (!new File(FILENAME).exists()) {
+			contactId = 0;
+			meetingId = 0; 
+		} else
+			try (ObjectInputStream
+					d = new ObjectInputStream(
+							new BufferedInputStream(
+									new FileInputStream(FILENAME)));) {
+				contacts = (Map<Integer, Contact>) d.readObject();
+				pastMeetings = (Map<Integer, PastMeeting>) d.readObject();
+				futureMeetings = (Map<Integer, FutureMeeting>) d.readObject();
+				contactsMeetings = (Map<Contact, Set<Meeting>>) d.readObject();
+				contactsPastMeetings = (Map<Contact, Set<PastMeeting>>) d.readObject();
+				meetingDates = (Map<Calendar, Set<Meeting>>) d.readObject();
+				contactId = contacts.size();
+				meetingId = Math.max(futureMeetings.size(), pastMeetings.size());
+
+			} catch (IOException | ClassNotFoundException ex) {
+				System.err.println("On read error " + ex);
+			}
 
 
 	}
@@ -70,31 +85,30 @@ public class ContactManagerImpl implements ContactManager {
 	public void flush() {
 		System.out.println("Saving data...");
 		try (ObjectOutputStream encode = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(FILENAME)));) {
-			encode.writeObject(contactList);
-			encode.writeObject(meetingList);
-			encode.writeObject(pastMeetingList);
+			encode.writeObject(contacts);
+			encode.writeObject(pastMeetings);
+			encode.writeObject(futureMeetings);
+			encode.writeObject(contactsMeetings);
+			encode.writeObject(contactsPastMeetings);
+			encode.writeObject(meetingDates);
 		} catch (IOException ex) {
 			System.err.println("write error: " + ex);
 		}
-
 	}
-
-
-
-
-
-
 
 
 
 	// Contacts methods
 
 	@Override
-	public void addNewContact(String name, String notes) throws NullPointerException {
+	public void addNewContact(String name, String notes) {
 
 		Contact newComtact = new ContactImpl(contactId, name, notes);
-		contactList.add(newComtact);
-		contactId ++ ;
+
+		contacts.put(contactId, newComtact);
+		contactsMeetings.put(newComtact, new HashSet<Meeting>());
+		contactsPastMeetings.put(newComtact, new HashSet<PastMeeting>());
+		++contactId;
 	}
 
 	@Override
@@ -103,32 +117,29 @@ public class ContactManagerImpl implements ContactManager {
 		Set<Contact> result = new HashSet<Contact>();
 
 		for (int id : ids) {
-			Contact aContact = contactList.get(id);
+			Contact contact = contacts.get(id);
 			System.out.println(id);
-			// check for null
-			result.add(aContact);
+			// TODO check for null
+			result.add(contact);
 
 		}
 		return result;
 	}
 
 	@Override
-	public Set<Contact> getContacts(String name) throws NullPointerException {
+	public Set<Contact> getContacts(String name) {
 		Set<Contact> result = new HashSet<Contact>();
-		int contactsNo = contactList.size();
 
-		for (int i = 0; i < contactsNo; i ++) {
-			if(contactList.get(i).getName().toLowerCase().contains(name.toLowerCase())) {
-				result.add(contactList.get(i));
+		for (Contact contact : contacts.values()) {
+			if (contact.getName().contains(name)) {
+				result.add(contact);
 			}
 		}
+
+
 		return result;
 	}
 
-	@Override
-	public List<Contact> getContacts() {
-		return contactList;
-	}
 
 
 
@@ -142,8 +153,27 @@ public class ContactManagerImpl implements ContactManager {
 			System.out.println("date/time entered was in the past. A future meetings date must be in the future.");
 		} else {
 			newFutureMeeting = new FutureMeetingImpl(meetingId, date, contacts);
-			meetingList.add(newFutureMeeting);
-			addMeetingToContacts(contacts, newFutureMeeting);
+
+			// add meeting to the future meetings Map
+			futureMeetings.put(meetingId, (FutureMeeting) newFutureMeeting);
+
+
+			// add meeting to the matching contacts
+			for (Contact contact : newFutureMeeting.getContacts()) {
+				contactsMeetings.get(contact).add(newFutureMeeting);
+			}
+
+			// add meeting to the date/meeting Map
+			Set<Meeting> meetingsOnDate = meetingDates.get(newFutureMeeting.getDate());
+
+			if (meetingsOnDate == null) {
+				meetingsOnDate = new HashSet<>();
+				meetingDates.put(newFutureMeeting.getDate(), meetingsOnDate);
+			}
+
+			meetingsOnDate.add(newFutureMeeting);
+
+
 			meetingId++;
 			result = newFutureMeeting.getId();
 			System.out.println("Your new meeting has been added with id: " + result);
@@ -159,24 +189,32 @@ public class ContactManagerImpl implements ContactManager {
 			System.out.println("date/time entered was in the futute. A past meetings date must be in the past.");
 		} else {
 			Meeting newPastMeeting = new PastMeetingImpl(meetingId, date, contacts, text);
-			meetingList.add(newPastMeeting);
-			pastMeetingList.add((PastMeeting) newPastMeeting);
-			addMeetingToContacts(contacts, newPastMeeting);
+
+			pastMeetings.put(meetingId, (PastMeeting) newPastMeeting);
+
+			for (Contact contact : newPastMeeting.getContacts()) {
+				contactsPastMeetings.get(contact).add((PastMeeting) newPastMeeting);
+			}
+
+			Set<Meeting> meetingsOnDate = meetingDates.get(newPastMeeting.getDate());
+
+			if (meetingsOnDate == null) {
+				meetingsOnDate = new HashSet<>();
+				meetingDates.put(newPastMeeting.getDate(), meetingsOnDate);
+			}
+
+			meetingsOnDate.add(newPastMeeting);
+
 			System.out.println("Meeting on " + date.getTime() + " added");
 
 			meetingId ++;
 		}
 	}
 
-	private void addMeetingToContacts(Set<Contact> contacts, Meeting meeting) {
-		for (Contact x : contacts) {
-			x.addMeeting(meeting);
-		}
-	}
 
 	@Override
 	public void addMeetingNotes(int id, String text) {
-		pastMeetingList.get(id).setNotes(text);
+		// TODO
 	}
 
 
@@ -185,20 +223,10 @@ public class ContactManagerImpl implements ContactManager {
 
 	@Override
 	public PastMeeting getPastMeeting(int id) {
-		PastMeeting result = null;
 
-		for (int i = 0; i < pastMeetingList.size(); i ++ ) {
+		// TODO check ids are valid past meeting ids
 
-			if (pastMeetingList.get(i).getId() == id) {
-				result = pastMeetingList.get(i);
-			}
-		}
-
-		if (result != null) {
-			System.out.println("Pastmeeting id = " + result.getId());
-		} else {
-			System.out.println("No meeting found with the id: " + id);
-		}
+		PastMeeting result = pastMeetings.get(id);
 		return result;
 	}
 
@@ -206,131 +234,69 @@ public class ContactManagerImpl implements ContactManager {
 
 	@Override
 	public FutureMeeting getFutureMeeting(int id) {
-		FutureMeeting result = (FutureMeeting) getMeeting(id);
 
-		if (result != null) {
-			if (result.getDate().getTime().before(calendar.getTime())) {
-				System.out.println("The meeting with the id " + id + " is in past");
-				return null;
-			} else {
-				System.out.println("Meeting " + result.getId() + " returned.");
-				
-			}
-		}
+		// TODO check ids are valid future meeting ids
+
+		FutureMeeting result = futureMeetings.get(id);
+
 		return result;
-
-
 	}
 
 
 
 	@Override
 	public Meeting getMeeting(int id) {
-		Meeting result = null;
 
-		for (int i = 0; i < meetingList.size(); i ++) {
-			if(meetingList.get(i).getId() == id) {
-				result = meetingList.get(i);
-			}
+		// TODO check for exceptions
+
+		Meeting meeting = pastMeetings.get(id);
+
+		if (meeting == null) {
+			return futureMeetings.get(id);
+		} else {
+			return meeting;
 		}
-		
-		if (result == null) {
-			System.out.println("No meeting found with the id: " + id);
-		}
-		return result;
+
 	}
-
-
-
 
 
 	@Override
 	public List<Meeting> getFutureMeetingList(Calendar date) {
-		List<Meeting> result = new ArrayList<Meeting>();
 
-		for (int i = 0; i < meetingList.size(); i ++) {
-			if (meetingList.get(i).getDate().equals(date)) {
-				result.add(meetingList.get(i));
-			}
-		}	
-		return result;
+		//TODO check date is valid / not null
+
+		Set<Meeting> meetings = meetingDates.get(date);
+		if (meetings == null) {
+			meetings = new HashSet<Meeting>();
+		}
+
+		return new LinkedList<Meeting>(meetings);
 	}
 
 
 
 	@Override
 	public List<Meeting> getFutureMeetingList(Contact contact) {
-		List<Meeting> meetings = null;
-		List<Meeting> result = null;
-		meetings = getAllMeetings(contact);
 
 
-		if (meetings != null) {
-			for (int i = 0; i < meetings.size(); i ++) {
-				if(meetings.get(i).getDate().getTime().before(calendar.getTime())) {
-					meetings.remove(i);
-				}
-			}
-		}
-		if (meetings == null) {
-			System.out.println(contact.getName().toUpperCase() + " has no meetings to display.");
-			return null;
-		} else {
-			result = new ArrayList<Meeting>();
+		// TODO check incoming contact is valid / not null
 
-			for (Meeting x : meetings) {
-				result.add((FutureMeeting) x);
-			}
-		}
-
+		List<Meeting> result = new LinkedList<Meeting>(contactsMeetings.get(contact));
 
 		return result;
 	}
 
 	@Override
 	public List<PastMeeting> getPastMeetingList(Contact contact) {
-		List<Meeting> meetings = null;
-
-		meetings = getAllMeetings(contact);
 
 
-		List<PastMeeting> result = new ArrayList<PastMeeting>();
+		// TODO check incoming contact is valid
 
-		if (meetings != null) {
-			for (int i = 0; i < meetings.size(); i ++) {
-				if (meetings.get(i).getDate().getTime().after(calendar.getTime())) {
-					meetings.remove(i);
-				}
-			}
-		}
-		if (meetings == null) {
-			System.out.println(contact.getName().toUpperCase() + " has no past meetings to display.");
-		} else {
-			for (Meeting x : meetings) {
-				result.add((PastMeeting) x);
-			}
-		}
+		List<PastMeeting> result = new LinkedList<PastMeeting>(contactsPastMeetings.get(contact));
+
 
 		return result;
 	}
-
-
-	private List<Meeting> getAllMeetings(Contact contact) {
-		Contact tempContact = contact;
-		List<Meeting> meetings = null;
-
-		if (tempContact.getMeetings().size() != 0) {
-			meetings = tempContact.getMeetings();
-		}
-
-		return meetings;
-	}
-
-
-
-
-
-
 
 
 }

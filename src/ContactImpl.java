@@ -5,15 +5,13 @@ import java.util.List;
 
 public class ContactImpl implements Contact, Serializable {
 	
-
-
 	private int id;
 	private String name;
 	private String note;
-	private List<Meeting> meetings;
+//	private List<Meeting> meetings;
 	
 	public ContactImpl(int id, String name, String note) {
-		meetings = new ArrayList<Meeting>();
+//		meetings = new ArrayList<Meeting>();
 		setId(id);
 		setName(name);
 		addNotes(note);
@@ -55,14 +53,14 @@ public class ContactImpl implements Contact, Serializable {
 		this.note = note;
 	}
 	
-	@Override
-	public void addMeeting(Meeting meeting) {
-		
-		this.meetings.add(meeting);
-	}
-	
-	public List<Meeting> getMeetings() {
-		return this.meetings;
-	}
+//	@Override
+//	public void addMeeting(Meeting meeting) {
+//		
+//		this.meetings.add(meeting);
+//	}
+//	
+//	public List<Meeting> getMeetings() {
+//		return this.meetings;
+//	}
 
 }

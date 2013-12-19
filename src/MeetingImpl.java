@@ -3,7 +3,7 @@ import java.util.Calendar;
 import java.util.Set;
 
 
-public class MeetingImpl implements Meeting, Serializable {
+public abstract class MeetingImpl implements Meeting, Serializable {
 	
 	private int id;
 	private Calendar date;
