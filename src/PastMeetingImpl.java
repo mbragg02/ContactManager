@@ -1,3 +1,6 @@
+import interfaces.Contact;
+import interfaces.PastMeeting;
+
 import java.util.Calendar;
 import java.util.Set;
 

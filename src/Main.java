@@ -1,3 +1,8 @@
+import interfaces.Contact;
+import interfaces.ContactManager;
+import interfaces.Meeting;
+import interfaces.PastMeeting;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -10,16 +15,17 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Main {
 
+public class Main {
 	private SimpleDateFormat dateFormat;
 	private ContactManager manager;
 	private Scanner in;
 
 	public Main() {
+		 dateFormat = new SimpleDateFormat("dd/MM/yyyy kk:mm");
+
 		in = new Scanner(System.in);
 		manager = new ContactManagerImpl();
-		dateFormat = new SimpleDateFormat("dd/MM/yyyy kk:mm");
 	}
 
 
@@ -51,7 +57,7 @@ public class Main {
 			} 
 			else {
 				if (choice.equals("exit")) {
-					manager.flush();
+//					manager.flush();
 					running = false;
 					break;
 				} else {
@@ -105,7 +111,11 @@ public class Main {
 
 		System.out.print("Now enter any notes for this contact: ");
 		String notes = getUserInput();
-		manager.addNewContact(name, notes);
+		try {
+			manager.addNewContact(name, notes);
+		} catch (NullPointerException ex) {
+			System.err.println(ex);
+		}
 		System.out.println(name.toUpperCase() + " has been successfully added to your contacts.\n");
 	}
 
@@ -296,11 +306,34 @@ public class Main {
 		}
 	}
 
+	
+	
+	
+	
+	
+	
 
+	/**
+	 * Method to get an input from the user.
+	 * @return String. The users input.
+	 */
 
+	private String getUserInput() {
+		String result = in.nextLine();
+		return result.trim().toLowerCase();
+	}
+	
+	
 
-
-
+	/**
+	 * Converts a string to a int.
+	 * @param str String to convert
+	 * @return int representation of the supplied string.
+	 */
+	private int toInteger(String str) {
+		int result = Integer.parseInt(str.trim());
+		return result;
+	}
 
 	//	Supporting methods
 
@@ -382,25 +415,8 @@ public class Main {
 
 
 
-	/**
-	 * Converts a string to a int.
-	 * @param str String to convert
-	 * @return int representation of the supplied string.
-	 */
-	private int toInteger(String str) {
-		int result = Integer.parseInt(str.trim());
-		return result;
-	}
 
-	/**
-	 * Method to get an input from the user.
-	 * @return String. The users input.
-	 */
 
-	private String getUserInput() {
-		String result = in.nextLine();
-		return result.trim().toLowerCase();
-	}
 
 	/**
 	 * Returns a Calendar for the given date string
@@ -409,6 +425,7 @@ public class Main {
 	 */
 
 	private Calendar getDate(String date) {
+
 		Calendar calendar = Calendar.getInstance();
 		Date newdate = null;
 		try {
@@ -422,8 +439,7 @@ public class Main {
 	}
 
 
-
-
+	
 	/**
 	 * Method to print out a set of contacts
 	 * @param contacts Set<Contact> contacts
@@ -444,6 +460,9 @@ public class Main {
 	private void printMeeting(Meeting meeting) {
 		System.out.println("Meeting id: " + meeting.getId());
 		System.out.println("on: " + meeting.getDate().getTime());
+		if (meeting instanceof PastMeeting) {
+			System.out.println("notes: "  + ((PastMeeting) meeting).getNotes());
+		}
 	}
 
 	/**
@@ -472,4 +491,8 @@ public class Main {
 		}
 
 	}
+
+
+
+	
 }

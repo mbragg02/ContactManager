@@ -1,3 +1,6 @@
+import interfaces.Contact;
+import interfaces.Meeting;
+
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Set;

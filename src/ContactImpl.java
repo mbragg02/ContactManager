@@ -1,3 +1,5 @@
+import interfaces.Contact;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +10,8 @@ public class ContactImpl implements Contact, Serializable {
 	private int id;
 	private String name;
 	private String note;
-//	private List<Meeting> meetings;
 	
 	public ContactImpl(int id, String name, String note) {
-//		meetings = new ArrayList<Meeting>();
 		setId(id);
 		setName(name);
 		addNotes(note);
