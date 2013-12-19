@@ -53,14 +53,5 @@ public class ContactImpl implements Contact, Serializable {
 		this.note = note;
 	}
 	
-//	@Override
-//	public void addMeeting(Meeting meeting) {
-//		
-//		this.meetings.add(meeting);
-//	}
-//	
-//	public List<Meeting> getMeetings() {
-//		return this.meetings;
-//	}
 
 }

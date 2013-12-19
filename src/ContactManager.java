@@ -22,7 +22,8 @@ public interface ContactManager {
 
 
 	/**
-	 * Returns the PAST meeting with the requested ID, or null if it there is none. *
+	 * Returns the PAST meeting with the requested ID, or null if it there is none. 
+	 *
 	 * @param id the ID for the meeting
 	 * @return the meeting with the requested ID, or null if it there is none.
 	 * @throws IllegalArgumentException if there is a meeting with that ID happening in the future
@@ -31,10 +32,12 @@ public interface ContactManager {
 
 
 	/**
-	 * Returns the FUTURE meeting with the requested ID, or null if there is none. *
+	 * Returns the FUTURE meeting with the requested ID, or null if there is none. 
+	 *
 	 * @param id the ID for the meeting
 	 * @return the meeting with the requested ID, or null if it there is none.
-	 * @throws IllegalArgumentException if there is a meeting with that ID happening in the past */
+	 * @throws IllegalArgumentException if there is a meeting with that ID happening in the past 
+	 */
 	FutureMeeting getFutureMeeting(int id);
 
 
