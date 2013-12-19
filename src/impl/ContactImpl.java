@@ -1,3 +1,5 @@
+package impl;
+
 import interfaces.Contact;
 
 import java.io.Serializable;

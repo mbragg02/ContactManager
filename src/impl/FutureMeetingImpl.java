@@ -1,3 +1,4 @@
+package impl;
 import interfaces.Contact;
 import interfaces.FutureMeeting;
 

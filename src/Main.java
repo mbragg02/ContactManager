@@ -1,3 +1,4 @@
+import impl.ContactManagerImpl;
 import interfaces.*;
 
 import java.text.ParseException;
@@ -143,7 +144,7 @@ public class Main {
 		Calendar meetingDate = null;
 		String date = null;
 		do {
-			System.out.println("Please enter a date for the meeting (DD/MM/YYYY HH:MM): ");
+			System.out.print("Please enter a date for the meeting (DD/MM/YYYY HH:MM): ");
 			date = getUserInput();
 			if(!dateMatcher(date)) {
 				System.out.println("Date not valid. Please try again.");
@@ -192,10 +193,14 @@ public class Main {
 				System.out.println(ex.getMessage());
 			}
 
-
 		} else {
 			// user has entered a string
-			printContacts(manager.getContacts(input));
+			try{
+				printContacts(manager.getContacts(input));
+
+			} catch (NullPointerException ex) {
+				System.out.println(ex.getMessage());
+			}
 		}
 	}
 
@@ -221,7 +226,16 @@ public class Main {
 		int id = toInteger(getUserInput());
 		System.out.print("Please enter your meeting note: ");
 		String note = getUserInput();
-		manager.addMeetingNotes(id, note);
+		try {
+			manager.addMeetingNotes(id, note);
+		} catch (IllegalArgumentException ex) {
+			System.out.println(ex);
+		} catch (IllegalStateException ex) {
+			System.out.println(ex);
+		} catch (NullPointerException ex) {
+			System.out.println(ex);
+		}
+
 	}
 
 	/**
@@ -231,7 +245,7 @@ public class Main {
 	 * or a date for a meeting.
 	 */
 	private void displayFutureMeeting() {
-		System.out.print("Please enther either a meeting ID, a contact name for meetings they are to attend, or a date one which a meeting is to take place (DD/MM/YYYY HH:MM):  ");
+		System.out.print("Please enther either a meeting ID, a contact name, or a date one which a meeting is to take place (DD/MM/YYYY HH:MM):  ");
 		String input = getUserInput();
 		if (input.isEmpty()) {
 			System.out.println("No input");
@@ -248,7 +262,9 @@ public class Main {
 			try {
 				printMeeting(manager.getFutureMeeting(toInteger(input)));
 
-			} catch(NullPointerException ex) {
+			} catch(IllegalArgumentException ex) {
+				System.out.println("A meeting with id: " + input + " is in the past.");
+			} catch (NullPointerException ex) {
 				System.out.println("Nothing to display");
 			}
 
@@ -305,22 +321,16 @@ public class Main {
 	}
 
 
-
-
-
-
-
+	// Supporting private methods
 
 	/**
 	 * Method to get an input from the user.
 	 * @return String. The users input.
 	 */
-
 	private String getUserInput() {
 		String result = in.nextLine();
 		return result.trim().toLowerCase();
 	}
-
 
 
 	/**
@@ -333,7 +343,6 @@ public class Main {
 		return result;
 	}
 
-	//	Supporting methods
 
 	/**
 	 * Asks the user for a series of contact names (separated by commas).
@@ -348,7 +357,6 @@ public class Main {
 		System.out.print("Please list the names of the contacts attending this meeting, seperated by commas: ");
 		contacts = getUserInput();
 		names = contacts.trim().split("\\s*,\\s*");
-
 
 		for (String name : names) {
 			if (manager.getContacts(name).size() == 0) {
@@ -365,14 +373,12 @@ public class Main {
 	}
 
 
-
 	/**
 	 * Matches a supplied string with a regular expression for the date format:
 	 * DD/MM/YYYY HH:MM
 	 * @param str String to match.
 	 * @return Boolean. A match or not
 	 */
-
 	private boolean dateMatcher(String str) {
 		boolean result = false;
 		// DD/MM/YYYY HH/MM
@@ -385,12 +391,12 @@ public class Main {
 
 	}
 
+	
 	/**
 	 * Gives a user the option to select a future meeting or past meeting.
 	 * Checks the user input for valid options.
 	 * @return Boolean. YES for future. NO for past
 	 */
-
 	private boolean pastOrFuture() {
 		boolean running = false;
 		boolean result = false;
@@ -412,16 +418,11 @@ public class Main {
 	}
 
 
-
-
-
-
 	/**
 	 * Returns a Calendar for the given date string
 	 * @param date String.
 	 * @return Calendar
 	 */
-
 	private Calendar getDate(String date) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy kk:mm");
 
@@ -436,7 +437,6 @@ public class Main {
 		calendar.setTime(newdate);
 		return calendar;
 	}
-
 
 
 	/**
