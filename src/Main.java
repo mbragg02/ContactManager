@@ -116,6 +116,7 @@ public class Main {
 	 */
 	private void addMeeting() {
 		boolean future = pastOrFuture();
+		
 		Set<Contact> meetingContacts = new HashSet<Contact>();
 		String[] names = null;
 
@@ -175,7 +176,14 @@ public class Main {
 			for (int i = 0; i < idsQuery.size(); i ++ ) {
 				ids[i] = toInteger(idsQuery.get(i));
 			}
-			printContacts(manager.getContacts(ids));
+
+
+			try {
+				printContacts(manager.getContacts(ids));
+			} catch (IllegalArgumentException ex) {
+				System.out.println(ex.getMessage());
+			}
+
 
 		} else {
 			// user has entered a string
@@ -189,10 +197,6 @@ public class Main {
 	 * Gives the user an option for either a past meeting or a future meeting.
 	 */
 	private void displayMeetingDetails() {
-//		if (manager.getContacts().isEmpty()) {
-//			System.out.println("Your Contacts list empty. Add some contacts and create some meetings first...\n");
-//			return;
-//		} 
 		boolean future = pastOrFuture();
 		if (future) {
 			displayFutureMeeting();
@@ -221,13 +225,17 @@ public class Main {
 	private void displayFutureMeeting() {
 		System.out.print("Please enther either a meeting ID, a contact name for meetings they are to attend, or a date one which a meeting is to take place (DD/MM/YYYY HH:MM):  ");
 		String input = getUserInput();
-
-		if (dateMatcher(input)) {
+		if (input.isEmpty()) {
+			System.out.println("No input");
+			return;
+		}
+		else if (dateMatcher(input)) {
 			// a date
 			if (manager.getFutureMeetingList(getDate(input)) != null) {
 				printMeetingList(manager.getFutureMeetingList(getDate(input)));
 			}
-		} else if (Character.isDigit(input.charAt(0))) {
+		} 
+		else if (Character.isDigit(input.charAt(0))) {
 			// an id
 			try {
 				printMeeting(manager.getFutureMeeting(toInteger(input)));
@@ -235,8 +243,9 @@ public class Main {
 			} catch(NullPointerException ex) {
 				System.out.println("Nothing to display");
 			}
-		
-		} else {
+
+		} 
+		else {
 			// a contact name
 			if (manager.getContacts(input).isEmpty()) {
 				System.out.println("\"" + input + "\" is not one of your contacts.");
