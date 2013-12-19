@@ -46,7 +46,7 @@ public class ContactManagerImpl implements ContactManager {
 	private Calendar calendar = new GregorianCalendar(); 
 
 	public ContactManagerImpl() {
-		//		load();
+		load();
 		// TODO CHECK FUTURE AND PAST MEETINGS are in correct lists
 
 	}
@@ -265,8 +265,8 @@ public class ContactManagerImpl implements ContactManager {
 
 	}
 
-	
-	
+
+
 	/**
 	 * Add a new meeting to be held in the future. 
 	 *
@@ -299,7 +299,7 @@ public class ContactManagerImpl implements ContactManager {
 		return result;
 	}
 
-	
+
 	/**
 	 * Create a new record for a meeting that took place in the past. 
 	 *
@@ -333,8 +333,8 @@ public class ContactManagerImpl implements ContactManager {
 		meetingId++;
 	}
 
-	
-	
+
+
 	/**
 	 * Add notes to a meeting. 
 	 *
@@ -528,8 +528,8 @@ public class ContactManagerImpl implements ContactManager {
 		return result;
 	}
 
-	
-	
+
+
 	/**
 	 * Returns the list of past meetings in which this contact has participated. 
 	 *

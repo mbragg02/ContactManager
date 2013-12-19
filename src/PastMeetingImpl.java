@@ -7,6 +7,7 @@ import java.util.Set;
 
 public class PastMeetingImpl extends MeetingImpl implements PastMeeting  {
 	
+	private static final long serialVersionUID = -5674794585117543367L;
 	private String notes; 
 	
 	public PastMeetingImpl(int id, Calendar date, Set<Contact> members, String notes) {
@@ -15,8 +16,7 @@ public class PastMeetingImpl extends MeetingImpl implements PastMeeting  {
 		
 	}
 	
-	@Override
-	public void setNotes(String notes) {
+	private void setNotes(String notes) {
 		this.notes = notes;
 	}
 

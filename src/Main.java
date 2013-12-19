@@ -1,7 +1,4 @@
-import interfaces.Contact;
-import interfaces.ContactManager;
-import interfaces.Meeting;
-import interfaces.PastMeeting;
+import interfaces.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,19 +12,20 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+/**
+ * Contacts Manager Application v1.1
+ * @author Michael Bragg
+ *
+ */
 public class Main {
-	private SimpleDateFormat dateFormat;
+
 	private ContactManager manager;
 	private Scanner in;
 
 	public Main() {
-		 dateFormat = new SimpleDateFormat("dd/MM/yyyy kk:mm");
-
 		in = new Scanner(System.in);
 		manager = new ContactManagerImpl();
 	}
-
 
 	public static void main(String[] args) {
 		Main launcher = new Main();
@@ -57,7 +55,7 @@ public class Main {
 			} 
 			else {
 				if (choice.equals("exit")) {
-//					manager.flush();
+					manager.flush();
 					running = false;
 					break;
 				} else {
@@ -126,7 +124,7 @@ public class Main {
 	 */
 	private void addMeeting() {
 		boolean future = pastOrFuture();
-		
+
 		Set<Contact> meetingContacts = new HashSet<Contact>();
 		String[] names = null;
 
@@ -306,12 +304,12 @@ public class Main {
 		}
 	}
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 
 	/**
 	 * Method to get an input from the user.
@@ -322,8 +320,8 @@ public class Main {
 		String result = in.nextLine();
 		return result.trim().toLowerCase();
 	}
-	
-	
+
+
 
 	/**
 	 * Converts a string to a int.
@@ -425,6 +423,7 @@ public class Main {
 	 */
 
 	private Calendar getDate(String date) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy kk:mm");
 
 		Calendar calendar = Calendar.getInstance();
 		Date newdate = null;
@@ -439,7 +438,7 @@ public class Main {
 	}
 
 
-	
+
 	/**
 	 * Method to print out a set of contacts
 	 * @param contacts Set<Contact> contacts
@@ -494,5 +493,5 @@ public class Main {
 
 
 
-	
+
 }

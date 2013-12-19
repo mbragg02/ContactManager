@@ -1,12 +1,12 @@
 import interfaces.Contact;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+
 
 
 public class ContactImpl implements Contact, Serializable {
-	
+
+	private static final long serialVersionUID = 217761466628658229L;
 	private int id;
 	private String name;
 	private String note;
