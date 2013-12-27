@@ -17,6 +17,7 @@ import org.junit.Test;
 
 public class ContactManagerImplTest {
 
+
 	private static ContactManager test;
 
 	Set<Contact> contacts;
