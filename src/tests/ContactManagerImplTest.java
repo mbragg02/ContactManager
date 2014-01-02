@@ -19,15 +19,20 @@ public class ContactManagerImplTest {
 
 
 	private static ContactManager test;
-
-	Set<Contact> contacts;
-	Calendar futureDate;
-	Calendar pastDate;
+	private Set<Contact> contacts;
+	private Calendar futureDate;
+	private Calendar pastDate;
+	private int contactId;
+	private int meetingId;
 
 
 	@Before
 	public void setUp() {
+		
+
 		test = new ContactManagerImpl();
+		contactId = 0;
+		meetingId = 0;
 		// Create 3 test contacts
 		test.addNewContact("adam", "adams notes");
 		test.addNewContact("bob", "bobs notes");
@@ -70,7 +75,7 @@ public class ContactManagerImplTest {
 		test.addNewContact("adam", null);
 	}
 
-	
+
 	// Contacts getters
 	@Test
 	public void testGetContactsIntArray() {	
@@ -131,12 +136,12 @@ public class ContactManagerImplTest {
 	public void addFutureMeetingNull() {
 		assertEquals(0, test.addFutureMeeting(null, futureDate));
 	} 
-	
-	
-	
-	
+
+
+
+
 	// Past Meeting setters
-	
+
 	@Test
 	public void testAddNewPastMeeting() {
 		test.addNewPastMeeting(contacts, pastDate, "past meeting note");
@@ -158,18 +163,18 @@ public class ContactManagerImplTest {
 	public void addNewPastMeetingNullContacts() {
 		test.addNewPastMeeting(null, pastDate, "past meeting note");
 	}
-	
-	
-	
-	
+
+
+
+
 	// Future Meeting getters
-	
+
 	@Test
 	public void testGetFutureMeeting() {
 		test.addFutureMeeting(contacts, futureDate);
 		assertEquals(contacts, test.getFutureMeeting(0).getContacts());
 	}
-	
+
 	// Tests that an IllegalArgumentException is thrown if a meeting is found in the past.
 	@Test(expected = IllegalArgumentException.class)
 	public void getFutureMeetingPastMeetingID() {
@@ -194,27 +199,29 @@ public class ContactManagerImplTest {
 		fail("Not yet implemented"); // TODO
 	}
 
-	
-	
+
+
 	// Past Meeting Getters
-	
+
 	@Test
 	public void testGetPastMeeting() {
 		test.addNewPastMeeting(contacts, pastDate, "past meeting note");
-        assertEquals(0, test.getPastMeeting(0).getId());
+		System.out.println(test.getPastMeeting(0).getId());
+		assertEquals(0, test.getPastMeeting(0).getId());
 	}
+
 	// Test getting a past meeting where a future meeting is found with the supplied ID
 	@Test (expected = IllegalArgumentException.class)
 	public void getPastMeetingFutureMeetingID() {
 		test.addFutureMeeting(contacts, futureDate);
 		test.getPastMeeting(0);
 	}
-	
+
 	@Test
 	public void getPasteMeetingNull() {
 		assertNull(test.getPastMeeting(999));
 	}
-	
+
 	@Test
 	public void testGetPastMeetingList() {
 		fail("Not yet implemented"); // TODO
@@ -222,17 +229,17 @@ public class ContactManagerImplTest {
 
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	@Test
 	public void testAddMeetingNotes() {
 		fail("Not yet implemented"); // TODO
 	}
-	
-	
+
+
 	@Test
 	public void testGetMeeting() {
 		fail("Not yet implemented"); // TODO

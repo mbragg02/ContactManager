@@ -4,8 +4,11 @@ import java.io.Serializable;
 import java.util.Comparator;
 import interfaces.Meeting;
 
-
-public class DateComparator<T> implements Comparator<Meeting>, Serializable{
+/**
+ * A Comparator to compare the dates of meeting objects. Also implements Serializable so that it can be saved into a file. 
+ *
+ */
+public class MeetingDateComparator<T> implements Comparator<Meeting>, Serializable{
 
 	private static final long serialVersionUID = -3420681978462640785L;
 

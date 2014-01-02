@@ -6,11 +6,15 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
+import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.OptionalDataException;
+import java.io.StreamCorruptedException;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
@@ -20,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -33,43 +38,45 @@ public class ContactManagerImpl implements ContactManager {
 	private int contactId;
 	private int meetingId;
 
-	// Contains the contacts 
+	// Map from Contact IDs to Contacts
 	private Map<Integer, Contact> contacts = new HashMap<Integer, Contact>();
 
-	// Contains the meetings and their IDs
+	// Map from meeting IDs to Meetings
 	private Map<Integer, PastMeeting> pastMeetings = new HashMap<Integer, PastMeeting>();
 	private Map<Integer, FutureMeeting> futureMeetings = new HashMap<Integer, FutureMeeting>();
 
-	// Contains the contacts and their meetings
+	// Maps from a Contact to Sets of past/future Meetings 
 	private Map<Contact, Set<Meeting>> contactsFutureMeetings = new HashMap<Contact, Set<Meeting>>() ;
 	private Map<Contact, Set<PastMeeting>> contactsPastMeetings = new HashMap<Contact, Set<PastMeeting>>();
 
-	// Contains dates and meetings scheduled for those dates
-	private Map<Calendar, Set<Meeting>> meetingDates = new HashMap<>();
-//	private Map<Calendar, Set<Meeting>> meetingDates = new TreeMap<Calendar, Set<Meeting>>();
+	// Maps from Calendar dates to Sets of Meetings
+	private Map<Calendar, Set<Meeting>> meetingDates = new TreeMap<Calendar, Set<Meeting>>();
 
-	private Calendar calendar = new GregorianCalendar(); 
+	private Calendar calendar;
+	private Comparator<Meeting> meetingDateComparator;
 
 	public ContactManagerImpl() {
 		load();
-		// TODO CHECK FUTURE AND PAST MEETINGS are in correct lists
+		calendar = new GregorianCalendar(); 
+		meetingDateComparator = new MeetingDateComparator<Meeting>();
 
+		// TODO CHECK FUTURE AND PAST MEETINGS are in correct lists
 	}
 
 
 	@SuppressWarnings("unchecked")
 	private void load() {
-		System.out.println("Loading data...");
 
 		// file does not exist or is directory or isn't readable
 		if (!new File(FILENAME).exists()) {
 			contactId = 0;
 			meetingId = 0; 
-		} else
-			try (ObjectInputStream
-					d = new ObjectInputStream(
-							new BufferedInputStream(
-									new FileInputStream(FILENAME)));) {
+		} else {
+			System.out.println("Loading data...");
+
+			try (FileInputStream fileInput = new FileInputStream(FILENAME);
+					BufferedInputStream bufferedFileInput = new BufferedInputStream(fileInput);	
+					ObjectInputStream d = new ObjectInputStream(bufferedFileInput);) {
 				contacts = (Map<Integer, Contact>) d.readObject();
 				pastMeetings = (Map<Integer, PastMeeting>) d.readObject();
 				futureMeetings = (Map<Integer, FutureMeeting>) d.readObject();
@@ -79,10 +86,27 @@ public class ContactManagerImpl implements ContactManager {
 				contactId = contacts.size();
 				meetingId = Math.max(futureMeetings.size(), pastMeetings.size());
 
-			} catch (IOException | ClassNotFoundException ex) {
-				System.err.println("File read error " + ex);
+			} catch (ClassNotFoundException ex) {
+				System.err.println("Class of a serialized object cannot be found. " + ex);
+			}catch (InvalidClassException ex) {
+				System.err.println("Something is wrong with a class used by serialization. " + ex);
+			}catch (StreamCorruptedException ex) {
+				System.err.println("Control information in the stream is inconsistent. " + ex);
+			} catch (OptionalDataException ex) {
+				System.err.println("Primitive data was found in the stream instead of objects. " + ex);
+			}catch (IOException ex) {
+				System.err.println("I/O error occured. " + ex);
 			}
+		}
 	}
+	
+	private void autoUpdateMeetings() {
+		
+	}
+	
+	
+	
+
 
 	/**
 	 * Save all data to disk. 
@@ -100,9 +124,15 @@ public class ContactManagerImpl implements ContactManager {
 			encode.writeObject(contactsFutureMeetings);
 			encode.writeObject(contactsPastMeetings);
 			encode.writeObject(meetingDates);
+		} catch (FileNotFoundException ex) {
+			System.out.println("File not found: " + ex);
+		} catch (InvalidClassException ex) {
+			System.err.println("Something is wrong with a class used by serialization: " + ex);
+		} catch (NotSerializableException ex) {
+			System.err.println("Some object to be serialized does not implement the java.io.Serializable interface: " + ex);
 		} catch (IOException ex) {
 			System.err.println("write error: " + ex);
-		}
+		} 
 	}
 
 
@@ -131,15 +161,13 @@ public class ContactManagerImpl implements ContactManager {
 		// Add the new Contact to the contacts list
 		contacts.put(contactId, newContact);
 
-		
-		Comparator<Meeting> x = new DateComparator<Meeting>();
 		// Create new empty lists to hold the contacts past & future meetings
-		contactsFutureMeetings.put(newContact, new TreeSet<Meeting>(x));
-		contactsPastMeetings.put(newContact, new TreeSet<PastMeeting>(x));
+		contactsFutureMeetings.put(newContact, new TreeSet<Meeting>(meetingDateComparator));
+		contactsPastMeetings.put(newContact, new TreeSet<PastMeeting>(meetingDateComparator));
 
 		++contactId;
 	}
-	
+
 
 	/**
 	 * Returns a list with the contacts whose name contains that string. 
@@ -154,7 +182,7 @@ public class ContactManagerImpl implements ContactManager {
 		if (name == null) {
 			throw new NullPointerException("Name is null");
 		}
-		
+
 		Set<Contact> result = new HashSet<Contact>();
 
 		for (Contact contact : contacts.values()) {
@@ -263,15 +291,19 @@ public class ContactManagerImpl implements ContactManager {
 		}
 
 		// add meeting to the date/meeting Map
+		//Try and get the meeting set for the particular date
 		Set<Meeting> meetingsOnDate = meetingDates.get(meeting.getDate());
 
 		if (meetingsOnDate == null) {
-			meetingsOnDate = new HashSet<>();
+			// If there are no meetings on that particular date.
+			// Create a new TreeSet wot the meetingDateComparator to keep in sorted.
+			meetingsOnDate = new TreeSet<Meeting>(meetingDateComparator);
+
+			// Add the empty set to the meetingDates Map
 			meetingDates.put(meeting.getDate(), meetingsOnDate);
 		}
-
+		//Add the meeting to meetingsOnDate
 		meetingsOnDate.add(meeting);
-
 
 	}
 
@@ -367,11 +399,11 @@ public class ContactManagerImpl implements ContactManager {
 		} else if (futureMeetings.containsKey(id)) {
 			//future meeting
 			FutureMeeting meeting = futureMeetings.get(id);
-			
+
 			if (meeting.getDate().getTime().after(calendar.getTime())) {
 				throw new IllegalStateException("Meeting is in the future");
 			}
-		
+
 			// Update the meeting to a past meeting
 			updateMeeting(meeting, text);
 
@@ -414,7 +446,7 @@ public class ContactManagerImpl implements ContactManager {
 				}
 			}
 
-			// Add the new post meeting to the correct data structures
+			// Add the new past meeting to the correct data structures
 			addMeeting(newPastMeeting);
 		} else {
 			throw new IllegalStateException("Meeting is in the future");
@@ -479,7 +511,7 @@ public class ContactManagerImpl implements ContactManager {
 	 */
 	@Override
 	public Meeting getMeeting(int id) {
-		
+
 		//  java.util.Map.get returns null if the map contains no mapping for the key
 		Meeting meeting = pastMeetings.get(id);
 
@@ -507,10 +539,8 @@ public class ContactManagerImpl implements ContactManager {
 
 		Set<Meeting> meetings = meetingDates.get(date);
 		if (meetings == null) {
-			meetings = new HashSet<Meeting>();
+			meetings = new TreeSet<Meeting>();
 		}
-		
-		//TOTO sort chronologically
 
 		return new LinkedList<Meeting>(meetings);
 	}
