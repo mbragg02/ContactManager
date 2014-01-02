@@ -60,7 +60,7 @@ public class Main {
 					running = false;
 					break;
 				} else {
-					System.out.println("Not a valid option.");
+					System.out.println("Not a valid option. Please try again");
 				}
 
 			}
@@ -72,7 +72,7 @@ public class Main {
 
 	/**
 	 * Main application menu
-	 * @param choice int. 1 - 5
+	 * @param choice int 1 - 5
 	 */
 	private void menu(int choice) {
 		switch(choice) {
@@ -146,12 +146,12 @@ public class Main {
 		do {
 			System.out.print("Please enter a date for the meeting (DD/MM/YYYY HH:MM): ");
 			date = getUserInput();
-			if(!dateMatcher(date)) {
+			if(!dateTimeMatcher(date)) {
 				System.out.println("Date not valid. Please try again.");
 			}
-		}while (!dateMatcher(date));
+		}while (!dateTimeMatcher(date));
 
-		meetingDate = getDate(date);
+		meetingDate = getDateTime(date);
 
 		if(future) {
 			manager.addFutureMeeting(meetingContacts, meetingDate);
@@ -161,9 +161,8 @@ public class Main {
 
 			manager.addNewPastMeeting(meetingContacts, meetingDate, note);
 		}
-		System.out.println("Meeting succesfully scheduled");
+		System.out.println("Meeting succesfully scheduled.");
 	}
-
 
 
 
@@ -177,7 +176,11 @@ public class Main {
 		System.out.print("Please enter a contact name or a series of contact IDs seperated by commas: ");
 		String input = getUserInput();
 
-		if (Character.isDigit(input.charAt(0))) {
+		if (input.isEmpty()) {
+			System.out.println("No input detected");
+		}
+
+		else if (Character.isDigit(input.charAt(0))) {
 			// user has entered ids
 			List<String> idsQuery = Arrays.asList(input.split("\\s*,\\s*"));
 			int [] ids = new int [idsQuery.size()];
@@ -185,7 +188,6 @@ public class Main {
 			for (int i = 0; i < idsQuery.size(); i ++ ) {
 				ids[i] = toInteger(idsQuery.get(i));
 			}
-
 
 			try {
 				printContacts(manager.getContacts(ids));
@@ -195,11 +197,15 @@ public class Main {
 
 		} else {
 			// user has entered a string
+			if (manager.getContacts(input).isEmpty()) {
+				System.out.println("\"" + input + "\" is not one of your contacts.\n");
+				return;
+			} 
+
 			try{
 				printContacts(manager.getContacts(input));
-
 			} catch (NullPointerException ex) {
-				System.out.println(ex.getMessage());
+				System.out.println("Name is null");
 			}
 		}
 	}
@@ -245,16 +251,19 @@ public class Main {
 	 * or a date for a meeting.
 	 */
 	private void displayFutureMeeting() {
-		System.out.print("Please enther either a meeting ID, a contact name, or a date one which a meeting is to take place (DD/MM/YYYY HH:MM):  ");
-		String input = getUserInput();
-		if (input.isEmpty()) {
-			System.out.println("No input");
-			return;
-		}
-		else if (dateMatcher(input)) {
+		String input;
+		do {
+			System.out.print("Please enther either a meeting ID, a contact name, or a date one which a meeting is to take place (DD/MM/YYYY hh:mm): ");
+			input = getUserInput();
+		} while (input.isEmpty());
+
+		if (dateTimeMatcher(input)) {
 			// a date
-			if (manager.getFutureMeetingList(getDate(input)) != null) {
-				printMeetingList(manager.getFutureMeetingList(getDate(input)));
+			if (manager.getFutureMeetingList(getDateTime(input)).isEmpty()) {
+				System.out.println("No meetings found scheduled for " + input);
+			} else {
+				printMeetingList(manager.getFutureMeetingList(getDateTime(input)));
+
 			}
 		} 
 		else if (Character.isDigit(input.charAt(0))) {
@@ -273,16 +282,21 @@ public class Main {
 			// a contact name
 			if (manager.getContacts(input).isEmpty()) {
 				System.out.println("\"" + input + "\" is not one of your contacts.");
-			} else {
-				for (Contact x : manager.getContacts(input)) {
-					if (manager.getFutureMeetingList(x) != null) {
-						printMeetingList(manager.getFutureMeetingList(x));
-					}
-
+			} 
+			List<Meeting> futureMeetings = null;
+			for (Contact x : manager.getContacts(input)) {
+				try {
+					futureMeetings = manager.getFutureMeetingList(x);
+				} catch (IllegalArgumentException ex) {
+					System.out.println("Not a valid contact");
 				}
 			}
+			try {
+				printMeetingList(futureMeetings);
+			} catch (NullPointerException ex) {
+				System.out.println("Nothing to display");
+			}
 		}
-		System.out.println();
 	}
 
 
@@ -292,9 +306,12 @@ public class Main {
 	 * A contact name
 	 */
 	private void displayPastMeeting() {
+		String input;
+		do {
+			System.out.print("Please enter either a meeting ID or a contact name to view all of the meetings they have attended: ");
+			input = getUserInput();
+		} while (input.isEmpty());
 
-		System.out.print("Please enter either a meeting ID or a contact name to view all of the meetings they have attended: ");
-		String input = getUserInput();
 		if (Character.isDigit(input.charAt(0))) {
 			// an id
 			int id = toInteger(input);
@@ -302,21 +319,30 @@ public class Main {
 				printMeeting(manager.getPastMeeting(id));
 			} catch (NullPointerException ex) {
 				System.out.println("Nothing to print");
+			} catch (IllegalArgumentException ex) {
+				System.out.println("A meeting matchting that ID was found in the future.");
 			}
-
-		} else {
+		} 
+		else {
 			// a contact name
 
 			if (manager.getContacts(input).isEmpty()) {
 				System.out.println("\"" + input + "\" is not one of your contacts.");
-			} else {
-				for (Contact x : manager.getContacts()) {
-					if(x.getName().equals(input)) {	
-						printPastMeetingList(manager.getPastMeetingList(x));
-					}
+			} 
+			List<PastMeeting> pastMeetings = null;
+			for (Contact x : manager.getContacts(input)) {
+				try {
+					pastMeetings = manager.getPastMeetingList(x);
+				} catch (IllegalArgumentException ex) {
+					System.out.println("Not a valid contact");
 				}
-			}
 
+			}
+			try {
+				printPastMeetingList(pastMeetings);
+			} catch (NullPointerException ex) {
+				System.out.println("Nothing to print");
+			}
 		}
 	}
 
@@ -357,41 +383,26 @@ public class Main {
 		System.out.print("Please list the names of the contacts attending this meeting, seperated by commas: ");
 		contacts = getUserInput();
 		names = contacts.trim().split("\\s*,\\s*");
-
+		boolean valid = true;
 		for (String name : names) {
 			if (manager.getContacts(name).size() == 0) {
 				System.out.println(name + " not found");
-				return null;
-			}
-			for (Contact x : manager.getContacts(name)) {
-				if (manager.getContacts().contains(x)) {
-					System.out.println(name + " valid.");
-				} 
-			}
+				valid = false;
+			} 
 		}
+		if (!valid) {
+			return null;
+		}
+
 		return names;
 	}
 
 
-	/**
-	 * Matches a supplied string with a regular expression for the date format:
-	 * DD/MM/YYYY HH:MM
-	 * @param str String to match.
-	 * @return Boolean. A match or not
-	 */
-	private boolean dateMatcher(String str) {
-		boolean result = false;
-		// DD/MM/YYYY HH/MM
-		Pattern p = Pattern.compile("([0-2][1-9]|[1-3]0|31)/(0[1-9]|10|11|12)/([0-9]{4})\\s([0-1][0-9]|2[0-3]):([0-5][0-9])");
-		Matcher m = p.matcher(str);
-		if (m.matches()) {
-			result = true;
-		}
-		return result;
-
-	}
 
 	
+	
+
+
 	/**
 	 * Gives a user the option to select a future meeting or past meeting.
 	 * Checks the user input for valid options.
@@ -417,13 +428,46 @@ public class Main {
 		return result;
 	}
 
+	/**
+	 * Matches a supplied string with a regular expression for the date format:
+	 * DD/MM/YYYY HH:MM
+	 * @param str String to match.
+	 * @return Boolean. A match or not
+	 */
+	private boolean dateTimeMatcher(String str) {
+		boolean result = false;
+		// DD/MM/YYYY HH/MM
+		Pattern p = Pattern.compile("([0-2][1-9]|[1-3]0|31)/(0[1-9]|10|11|12)/([0-9]{4})\\s([0-1][0-9]|2[0-3]):([0-5][0-9])");
+		Matcher m = p.matcher(str);
+		if (m.matches()) {
+			result = true;
+		}
+		return result;
+	}
+	
+	/**
+	 * Matches a supplied string with a regular expression for the date format:
+	 * DD/MM/YYYY
+	 * @param str String to match.
+	 * @return Boolean. A match or not
+	 */
+	private boolean dateMatcher(String str) {
+		boolean result = false;
+		// DD/MM/YYYY
+		Pattern p = Pattern.compile("([0-2][1-9]|[1-3]0|31)/(0[1-9]|10|11|12)/([0-9]{4})");
+		Matcher m = p.matcher(str);
+		if (m.matches()) {
+			result = true;
+		}
+		return result;
+	}
 
 	/**
 	 * Returns a Calendar for the given date string
 	 * @param date String.
 	 * @return Calendar
 	 */
-	private Calendar getDate(String date) {
+	private Calendar getDateTime(String date) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy kk:mm");
 
 		Calendar calendar = Calendar.getInstance();
@@ -437,6 +481,28 @@ public class Main {
 		calendar.setTime(newdate);
 		return calendar;
 	}
+	
+	/**
+	 * Returns a Calendar for the given date string
+	 * @param date String.
+	 * @return Calendar
+	 */
+	private Calendar getDate(String date) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+		Calendar calendar = Calendar.getInstance();
+		Date newdate = null;
+		try {
+			newdate = dateFormat.parse(date);
+		} catch (ParseException e) {
+			System.out.println("Invalid date format");
+			e.printStackTrace();
+		}
+		calendar.setTime(newdate);
+		return calendar;
+	}
+	
+	
 
 
 	/**
@@ -444,6 +510,7 @@ public class Main {
 	 * @param contacts Set<Contact> contacts
 	 */
 	private void printContacts(Set<Contact> contacts) {
+		System.out.println();
 		for (Contact x : contacts) {
 			System.out.println("ID: " + x.getId());
 			System.out.println("Name: " + x.getName());
@@ -457,6 +524,7 @@ public class Main {
 	 * @param meeting Meeting
 	 */
 	private void printMeeting(Meeting meeting) {
+		System.out.println();
 		System.out.println("Meeting id: " + meeting.getId());
 		System.out.println("on: " + meeting.getDate().getTime());
 		if (meeting instanceof PastMeeting) {
@@ -469,6 +537,7 @@ public class Main {
 	 * @param list List<PastMeeting>
 	 */
 	private void printPastMeetingList(List<PastMeeting> list) {
+		System.out.println();
 		for (PastMeeting x : list) {
 			System.out.println("Meeting id: " + x.getId());
 			System.out.println("on: " + x.getDate().getTime());
@@ -483,6 +552,7 @@ public class Main {
 	 * @param list List<Meeting>
 	 */
 	private void printMeetingList(List<Meeting> list) {
+		System.out.println();
 		for (Meeting x : list) {
 			System.out.println("Meeting id: " + x.getId());
 			System.out.println("on: " + x.getDate().getTime());
