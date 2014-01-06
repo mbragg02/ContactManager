@@ -1,4 +1,4 @@
-package impl;
+package utilities;
 
 import java.io.Serializable;
 import java.util.Comparator;

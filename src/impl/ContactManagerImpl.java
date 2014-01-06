@@ -1,6 +1,7 @@
 package impl;
 
 import interfaces.*;
+import utilities.MeetingDateComparator;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
 
 /**
  * A class to manage Contacts and Meetings.
@@ -59,8 +61,6 @@ public class ContactManagerImpl implements ContactManager {
 		load();
 		calendar = new GregorianCalendar(); 
 		meetingDateComparator = new MeetingDateComparator<Meeting>();
-
-		// TODO CHECK FUTURE AND PAST MEETINGS are in correct lists
 	}
 
 
@@ -99,11 +99,6 @@ public class ContactManagerImpl implements ContactManager {
 			}
 		}
 	}
-	
-	private void autoUpdateMeetings() {
-		
-	}
-	
 	
 	
 
