@@ -243,7 +243,6 @@ public class ContactManagerImpl extends FileIO implements ContactManager  {
 			result = newFutureMeeting.getId();
 
 		}
-//		++meetingId;
 		data.incrementMeetingId();
 		return result;
 	}
@@ -302,7 +301,7 @@ public class ContactManagerImpl extends FileIO implements ContactManager  {
 		if (data.getPastMeetings().containsKey(id)) {
 			//past meeting 
 			PastMeeting meeting = data.getPastMeetings().remove(id);
-			String notes = meeting.getNotes() + '\n' + text;
+			String notes = meeting.getNotes() + " " + text;
 			updateMeeting(meeting, notes);
 
 		} else if (data.getFutureMeetings().containsKey(id)) {
@@ -485,7 +484,7 @@ public class ContactManagerImpl extends FileIO implements ContactManager  {
 	 * duplicates.
 	 *
 	 * @param contact one of the users contacts
-	 * @return the list of future meeting(s) scheduled with this contact (maybe empty).
+	 * @return the list of past meeting(s) scheduled with this contact (maybe empty).
 	 * @throws IllegalArgumentException if the contact does not exist
 	 */
 	@Override
