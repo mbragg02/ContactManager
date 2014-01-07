@@ -1,5 +1,4 @@
 import java.util.Scanner;
-
 import utilities.Util;
 
 /**
@@ -9,11 +8,10 @@ import utilities.Util;
  */
 public class MainMenu {
 
-	private Main contactManager;
-
+	private Main main;
 
 	public MainMenu() {
-		contactManager = new Main();
+		main = new Main();
 	}
 
 	public void launch() {
@@ -24,19 +22,19 @@ public class MainMenu {
 		String choice = "";
 		System.out.println("  Welcome to Contact Managaer v1");
 		while(running) {
-
+			System.out.println("  Main Menu");
 			System.out.println("> Enter 1 to add a new contact");
 			System.out.println("> Enter 2 to add a new meeting");
 			System.out.println("> Enter 3 to view a contacts details");
 			System.out.println("> Enter 4 to view a meetings details");
 			System.out.println("> Enter 5 to add a note to a meeting");
-			System.out.println("> Enter EXIT to close");
+			System.out.println("> Enter EXIT to save data and exit");
 			System.out.print(": ");
 
 			choice = in.nextLine().trim();
 			
 			if (choice.toLowerCase().equals("exit")) {
-				contactManager.save();
+				main.save();
 				running = false;
 				break;
 			} 
@@ -66,19 +64,19 @@ public class MainMenu {
 
 		switch(choice) {
 		case 1: // add a new contact
-			contactManager.addContact();
+			main.addContact();
 			break;
 		case 2: // add a new meeting
-			contactManager.addMeeting();
+			main.addMeeting();
 			break;
 		case 3: // display a contacts details
-			contactManager.displayContactDetails();
+			main.displayContactDetails();
 			break;
 		case 4: // display a meetings details
-			contactManager.displayMeetingDetails();
+			main.displayMeetingDetails();
 			break;
 		case 5: // add note to meeting
-			contactManager.addMeetingNote();
+			main.addMeetingNote();
 			break;
 		default: 
 			throw new IllegalArgumentException("Input must be between 1 and 5");
