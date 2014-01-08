@@ -1,6 +1,7 @@
 package utilities;
 
 import interfaces.*;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -58,7 +59,7 @@ public abstract class Util {
 		try {
 			newdate = dateFormat.parse(date);
 		} catch (ParseException e) {
-			System.out.println("Invalid date format");
+			println("Invalid date format");
 			e.printStackTrace();
 		}
 		calendar.setTime(newdate);
@@ -108,16 +109,24 @@ public abstract class Util {
 
 	// Methods to print out information
 	/**
+	 * Prints a string to the output stream.
+	 * i.e System.out.println(String);
+	 * @param str
+	 */
+	public static void println(String str){
+		System.out.println(str);
+	}
+	/**
 	 * Method to print out a set of contacts
 	 * @param contacts Set<Contact> contacts
 	 */
 	public static void printContacts(Set<Contact> contacts) {
-		System.out.println();
+		Util.println("");
 		for (Contact x : contacts) {
-			System.out.println("ID: " + x.getId());
-			System.out.println("Name: " + x.getName());
-			System.out.println("Notes: " + x.getNotes());
-			System.out.println();
+			println("ID: " + x.getId());
+			println("Name: " + x.getName());
+			println("Notes: " + x.getNotes());
+			println("");
 		}
 	}
 
@@ -126,11 +135,11 @@ public abstract class Util {
 	 * @param meeting Meeting
 	 */
 	public static void printMeeting(Meeting meeting) {
-		System.out.println();
-		System.out.println("Meeting id: " + meeting.getId());
-		System.out.println("on: " + meeting.getDate().getTime());
+		println("");
+		println("Meeting id: " + meeting.getId());
+		println("on: " + meeting.getDate().getTime());
 		if (meeting instanceof PastMeeting) {
-			System.out.println("notes: "  + ((PastMeeting) meeting).getNotes());
+			println("notes: "  + ((PastMeeting) meeting).getNotes());
 		}
 	}
 
@@ -140,14 +149,14 @@ public abstract class Util {
 	 */
 	public static void printPastMeetingList(List<PastMeeting> list) {
 		if (list.isEmpty()) {
-			System.out.println("No past meetings scheduled");
+			println("No past meetings scheduled");
 		}
 		System.out.println();
 		for (PastMeeting x : list) {
-			System.out.println("Meeting id: " + x.getId());
-			System.out.println("on: " + x.getDate().getTime());
-			System.out.println("notes: " + x.getNotes());
-			System.out.println();
+			println("Meeting id: " + x.getId());
+			println("on: " + x.getDate().getTime());
+			println("notes: " + x.getNotes());
+			println("");
 		}
 
 	}
@@ -158,13 +167,13 @@ public abstract class Util {
 	 */
 	public static void printMeetingList(List<Meeting> list) {
 		if (list.isEmpty()) {
-			System.out.println("No future meetings scheduled");
+			println("No future meetings scheduled");
 		}
 		System.out.println();
 		for (Meeting x : list) {
-			System.out.println("Meeting id: " + x.getId());
-			System.out.println("on: " + x.getDate().getTime());
-			System.out.println();
+			println("Meeting id: " + x.getId());
+			println("on: " + x.getDate().getTime());
+			println("");
 		}
 
 	}

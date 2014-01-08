@@ -17,7 +17,7 @@ import java.io.StreamCorruptedException;
 /**
  * Class for File reading and writing methods.
  * @author Michael Bragg
- * Contains load and save methods
+ * Contains load(DataStore) and save() methods
  *
  */
 public abstract class FileIO {

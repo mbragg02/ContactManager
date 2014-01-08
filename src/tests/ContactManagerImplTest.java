@@ -46,17 +46,15 @@ public class ContactManagerImplTest {
 
 	@Ignore
 	public void testFlush() {
-		fail("Not yet implemented"); // TODO
 	}
-
-
 
 	// Contacts setters
 
 	@Test
 	public void testAddNewContact() {
-		int actual = contactManagerTest.getContacts("adam").size();
-		assertEquals(1, actual);
+		contactManagerTest.addNewContact("terry", "terrys notes");
+		String actual = contactManagerTest.getContacts("terry").iterator().next().getName();
+		assertEquals("terry", actual);
 	}
 
 	// Test a Null contact name argument
@@ -68,7 +66,7 @@ public class ContactManagerImplTest {
 	// Test a Null notes argument
 	@Test(expected = NullPointerException.class)
 	public void testContactNotesNull() {
-		contactManagerTest.addNewContact("adam", null);
+		contactManagerTest.addNewContact("terry", null);
 	}
 
 
@@ -93,7 +91,7 @@ public class ContactManagerImplTest {
 		assertEquals(contacts, actual);
 	}
 
-	// Tests a contact name that is not recognized by the contacts manager
+	// Tests a contact name that is not recognised by the contacts manager returns an empty set
 	@Test
 	public void nonMatchingGetContact() {
 		Set<Contact> output = contactManagerTest.getContacts("xxxxx");
@@ -178,12 +176,11 @@ public class ContactManagerImplTest {
 		contactManagerTest.addNewPastMeeting(contacts, pastDate, "test");
 		contactManagerTest.getFutureMeeting(0);
 	}
+	
 	@Test
 	public void getFutureMeetingNull() {
 		assertNull(contactManagerTest.getFutureMeeting(999));
 	}
-
-
 
 	@Test
 	public void testGetFutureMeetingListCalendar() {
@@ -209,11 +206,16 @@ public class ContactManagerImplTest {
 		assertEquals(expectedFutureMeetingList.contains(contact), futureMeetingList.contains(contact));	
 		
 	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void getFutureMeetingListNullContact() {
+		Contact contact = new ContactImpl(99, "peter", "peters notes");
+		contactManagerTest.getFutureMeetingList(contact);
+	}
 
 
-
+	
 	// Past Meeting Getters
-
 	@Test
 	public void testGetPastMeeting() {
 		contactManagerTest.addNewPastMeeting(contacts, pastDate, "past meeting note");
@@ -249,13 +251,18 @@ public class ContactManagerImplTest {
 		// Test if the two lists contain the same contact.
 		assertEquals(expectedPastMeetingList.contains(contact), pastMeetingList.contains(contact));	
 	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void getPastMeetingListNullContact() {
+		Contact contact = new ContactImpl(99, "peter", "peters notes");
+		contactManagerTest.getPastMeetingList(contact);
+	}
 
 
 
 
 
-
-
+	// Tests for adding notes
 
 	@Test
 	public void testAddMeetingNotes() {

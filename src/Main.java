@@ -39,9 +39,9 @@ public class Main {
 		try {
 			manager.addNewContact(name, notes);
 		} catch (NullPointerException ex) {
-			System.err.println(ex);
+			System.err.println(ex.getMessage());
 		}
-		System.out.println(name.toUpperCase() + " has been successfully added to your contacts.\n");
+		Util.println("\n" + name.toUpperCase() + " has been successfully added to your contacts.\n");
 	}
 
 	/**
@@ -57,13 +57,12 @@ public class Main {
 
 		do {
 			names = contactsMatcher();
-
 		} while (names == null);
 
-		for (String x : names) {
-			for (Contact y : manager.getContacts(x)) {
-				meetingContacts.add(y);
-				System.out.println(x + " added to meeting.");
+		for (String name : names) {
+			for (Contact contact : manager.getContacts(name)) {
+				meetingContacts.add(contact);
+				Util.println(name + " added to meeting.");
 			}
 		}
 
@@ -75,7 +74,7 @@ public class Main {
 			System.out.print("Please enter a date for the meeting (DD/MM/YYYY HH:MM): ");
 			date = getUserInput();
 			if(!Util.dateTimeMatcher(date)) {
-				System.out.println("Date not valid. Please try again.");
+				Util.println("Date not valid. Please try again.");
 				valid = false;
 			}
 
@@ -86,7 +85,7 @@ public class Main {
 					try {
 						manager.addFutureMeeting(meetingContacts, meetingDate);
 					} catch (IllegalArgumentException ex) {
-						System.out.println("A future meeting's date must be in the future");
+						Util.println("A future meeting's date must be in the future");
 						valid = false;
 					}
 				} 
@@ -96,16 +95,14 @@ public class Main {
 					try {
 						manager.addNewPastMeeting(meetingContacts, meetingDate, note);
 					} catch (IllegalArgumentException ex) {
-						System.out.println("Date must be in the past");
+						Util.println("Date must be in the past");
 						valid = false;
 					}
 				}
 			}
 
 		} while (!valid);
-
-
-		System.out.println("Meeting succesfully scheduled.");
+		Util.println("Meeting succesfully scheduled.");
 	}
 
 	/**
@@ -119,13 +116,13 @@ public class Main {
 		String input = getUserInput();
 
 		if (input.isEmpty()) {
-			System.out.println("No input detected");
+			Util.println("No input detected");
 		}
 
 		else if (Character.isDigit(input.charAt(0))) {
 			// user has entered ids
 			List<String> idsQuery = Arrays.asList(input.split("\\s*,\\s*"));
-			int [] ids = new int [idsQuery.size()];
+			int[] ids = new int [idsQuery.size()];
 
 			for (int i = 0; i < idsQuery.size(); i ++ ) {
 				ids[i] = Util.toInteger(idsQuery.get(i));
@@ -134,20 +131,20 @@ public class Main {
 			try {
 				Util.printContacts(manager.getContacts(ids));
 			} catch (IllegalArgumentException ex) {
-				System.out.println(ex.getMessage());
+				Util.println(ex.getMessage());
 			}
 
 		} else {
 			// user has entered a string
 			if (manager.getContacts(input).isEmpty()) {
-				System.out.println("\"" + input + "\" is not one of your contacts.\n");
+				Util.println("\"" + input + "\" is not one of your contacts.\n");
 				return;
 			} 
 
 			try{
 				Util.printContacts(manager.getContacts(input));
 			} catch (NullPointerException ex) {
-				System.out.println("Name is null");
+				Util.println("Contact name is null");
 			}
 		}
 	}
@@ -165,43 +162,7 @@ public class Main {
 			displayPastMeeting();
 		}
 	}
-
-	/**
-	 * Choice 5. Add a note to a meeting
-	 */
-	void addMeetingNote() {
-		System.out.print("Please enter the ID for the meeting: ");
-		int id = Util.toInteger(getUserInput());
-		System.out.print("Please enter your meeting note: ");
-		String note = getUserInput();
-		try {
-			manager.addMeetingNotes(id, note);
-			System.out.println("Note successfuly added to meeting: " + id );
-			Util.printMeeting(manager.getPastMeeting(id));
-			System.out.println();
-
-		} catch (IllegalArgumentException ex) {
-			System.out.println(ex.getMessage());
-		} catch (IllegalStateException ex) {
-			System.out.println(ex.getMessage());
-		} catch (NullPointerException ex) {
-			System.out.println(ex.getMessage());
-		}
-
-	}
-
-	/**
-	 * Choice (6) EXIT
-	 */
-	void save(){
-		manager.flush();
-	}
-
-
-
-
-	// Supporting private methods. User interaction
-
+	
 	/**
 	 * Displays Future Meeting information. Gives the user an option enter either:
 	 * A meeting ID
@@ -218,7 +179,7 @@ public class Main {
 		if (Util.dateTimeMatcher(input)) {
 			// a date has been entered
 			if (manager.getFutureMeetingList(Util.parseDate(input)).isEmpty()) {
-				System.out.println("No meetings found scheduled for " + input);
+				Util.println("No meetings found scheduled for " + input + "\n");
 			} else {
 				Util.printMeetingList(manager.getFutureMeetingList(Util.parseDate(input)));
 
@@ -230,29 +191,29 @@ public class Main {
 				Util.printMeeting(manager.getFutureMeeting(Util.toInteger(input)));
 
 			} catch(IllegalArgumentException ex) {
-				System.out.println("A meeting with id: " + input + " is in the past.");
+				Util.println("A meeting with id: " + input + " is in the past.\n");
 			} catch (NullPointerException ex) {
-				System.out.println("Nothing to display");
+				Util.println("No meeting found\n");
 			}
 
 		} 
 		else {
 			// a contact name has been entered
 			if (manager.getContacts(input).isEmpty()) {
-				System.out.println("\"" + input + "\" is not one of your contacts.");
+				Util.println("\"" + input + "\" is not one of your contacts.\n");
 			} 
 			List<Meeting> futureMeetings = null;
 			for (Contact x : manager.getContacts(input)) {
 				try {
 					futureMeetings = manager.getFutureMeetingList(x);
 				} catch (IllegalArgumentException ex) {
-					System.out.println("Not a valid contact");
+					Util.println("Not a valid contact\n");
 				}
 			}
 			try {
 				Util.printMeetingList(futureMeetings);
 			} catch (NullPointerException ex) {
-				System.out.println("Nothing to display");
+				Util.println("Nothing to display");
 			}
 		}
 	}
@@ -275,44 +236,76 @@ public class Main {
 			int id = Util.toInteger(input);
 			try {
 				Util.printMeeting(manager.getPastMeeting(id));
-			} catch (NullPointerException ex) {
-				System.out.println("Nothing to print");
 			} catch (IllegalArgumentException ex) {
-				System.out.println("A meeting matchting that ID was found in the future.");
+				Util.println("A meeting matchting that ID was found in the future.\n");
+			} catch (NullPointerException ex) {
+				Util.println("No meeting found\n");
 			}
 		} 
 		else {
 			// a contact name has been entered
 
 			if (manager.getContacts(input).isEmpty()) {
-				System.out.println("\"" + input + "\" is not one of your contacts.");
+				Util.println("\"" + input + "\" is not one of your contacts.");
 			} 
 			List<PastMeeting> pastMeetings = null;
 			for (Contact x : manager.getContacts(input)) {
 				try {
 					pastMeetings = manager.getPastMeetingList(x);
 				} catch (IllegalArgumentException ex) {
-					System.out.println("Not a valid contact");
+					Util.println("Not a valid contact");
 				}
 			}
 			try {
 				Util.printPastMeetingList(pastMeetings);
 			} catch (NullPointerException ex) {
-				System.out.println("Nothing to print");
+				Util.println("Nothing to print");
 			}
 		}
 	}
 
+	/**
+	 * Choice 5. Add a note to a meeting
+	 */
+	void addMeetingNote() {
+		System.out.print("Please enter the ID for the meeting: ");
+		int id = Util.toInteger(getUserInput());
+		System.out.print("Please enter your meeting note: ");
+		String note = getUserInput();
+		try {
+			manager.addMeetingNotes(id, note);
+			Util.println("Note successfuly added to meeting: " + id );
+			Util.printMeeting(manager.getPastMeeting(id));
+			Util.println("");
 
+		} catch (IllegalArgumentException ex) {
+			Util.println(ex.getMessage());
+		} catch (IllegalStateException ex) {
+			Util.println(ex.getMessage());
+		} catch (NullPointerException ex) {
+			Util.println(ex.getMessage());
+		}
+
+	}
+
+	/**
+	 * Choice (6) EXIT
+	 */
+	void save(){
+		manager.flush();
+	}
+
+
+
+
+	// Supporting private methods. User interaction. Use of Scanner in
 	/**
 	 * Method to get an input from the user.
 	 * @return String. The users input.
 	 */
 	private String getUserInput() {
-		String result = in.nextLine();
-		return result.trim().toLowerCase();
+		return in.nextLine().trim().toLowerCase();
 	}
-
 
 	/**
 	 * Asks the user for a series of contact names (separated by commas).
@@ -330,14 +323,13 @@ public class Main {
 		boolean valid = true;
 		for (String name : names) {
 			if (manager.getContacts(name).size() == 0) {
-				System.out.println(name + " not found");
+				Util.println(name + " not found");
 				valid = false;
 			} 
 		}
 		if (!valid) {
 			return null;
 		}
-
 		return names;
 	}
 
@@ -358,7 +350,7 @@ public class Main {
 				if (choice.equals("f") ? result = true : false);
 				running = false;
 			} else {
-				System.out.println("Not a valid choice. Please try again");
+				Util.println("Not a valid choice. Please try again");
 				running = true;
 			}
 

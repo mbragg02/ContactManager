@@ -68,8 +68,8 @@ public class ContactManagerImpl extends FileIO implements ContactManager  {
 		// Create new empty lists to hold the contacts past & future meetings
 		data.getContactsFutureMeetings().put(newContact, new TreeSet<Meeting>(meetingDateComparator));
 		data.getContactsPastMeetings().put(newContact, new TreeSet<PastMeeting>(meetingDateComparator));
+		
 		data.incrementContactId();
-//		++contactId;
 	}
 
 

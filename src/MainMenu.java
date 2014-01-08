@@ -18,18 +18,18 @@ public class MainMenu {
 		
 		Scanner in = new Scanner(System.in);
 		boolean running = true;
-		
 		String choice = "";
-		System.out.println("  Welcome to Contact Managaer v1");
+		
+		Util.println("  Welcome to Contact Managaer v1");
 		while(running) {
-			System.out.println("  Main Menu");
-			System.out.println("> Enter 1 to add a new contact");
-			System.out.println("> Enter 2 to add a new meeting");
-			System.out.println("> Enter 3 to view a contacts details");
-			System.out.println("> Enter 4 to view a meetings details");
-			System.out.println("> Enter 5 to add a note to a meeting");
-			System.out.println("> Enter EXIT to save data and exit");
-			System.out.print(": ");
+			Util.println("  Main Menu");
+			Util.println("> Enter 1 to add a new contact");
+			Util.println("> Enter 2 to add a new meeting");
+			Util.println("> Enter 3 to view a contacts details");
+			Util.println("> Enter 4 to view a meetings details");
+			Util.println("> Enter 5 to add a note to a meeting");
+			Util.println("> Enter EXIT to save data and exit");
+			Util.println(": ");
 
 			choice = in.nextLine().trim();
 			
@@ -43,15 +43,15 @@ public class MainMenu {
 					int choiceNumber = Util.toInteger(choice);
 					menu(choiceNumber);
 				} catch (NumberFormatException ex) {
-					System.out.println("Not a valid option. Please try again");
+					Util.println("Not a valid option. Please try again");
 				} catch (IllegalArgumentException ex) {
-					System.out.println("Must be between 1 and 5. Please try again");
+					Util.println("Must be between 1 and 5. Please try again");
 				}
 			}
 				
 		} // end of running loop
 		in.close();
-		System.out.println("Exit succesfull");
+		Util.println("Exit succesfull");
 	}
 
 
