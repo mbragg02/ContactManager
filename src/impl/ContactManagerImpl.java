@@ -1,9 +1,10 @@
 package impl;
 
 import interfaces.*;
-import utilities.DataStore;
-import utilities.FileIO;
+import utilities.ManagerData;
+import utilities.ManagerFileIO;
 import utilities.MeetingDateComparator;
+
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
@@ -18,11 +19,11 @@ import java.util.TreeSet;
  * A class to manage Contacts and Meetings.
  * @author Michael Bragg
  */
-public class ContactManagerImpl extends FileIO implements ContactManager  {
+public class ContactManagerImpl extends ManagerFileIO implements ContactManager  {
 
 	private Calendar calendar;
 	private Comparator<Meeting> meetingDateComparator;
-	private DataStore data;
+	private ManagerData data;
 	
 	public ContactManagerImpl() {	
 		calendar = new GregorianCalendar(); 
@@ -162,8 +163,6 @@ public class ContactManagerImpl extends FileIO implements ContactManager  {
 
 
 
-
-
 	// Meeting Setters
 	/**
 	 * Method to add a new meeting
@@ -175,27 +174,22 @@ public class ContactManagerImpl extends FileIO implements ContactManager  {
 	private void addMeeting(Meeting meeting) {
 
 		if (meeting instanceof FutureMeeting) {
-			// add meeting to the future meetings Map
-//			futureMeetings.put(meeting.getId(), (FutureMeeting) meeting);
 			data.addFutureMeeting(meeting.getId(), (FutureMeeting) meeting);
-
-			// add meeting to the matching contacts
 			for (Contact contact : meeting.getContacts()) {
 				data.getContactsFutureMeetings().get(contact).add(meeting);
 			}
 		}
 
 		if (meeting instanceof PastMeeting) {
-			//add meeting to the past meeting map
-//			pastMeetings.put(meeting.getId(), (PastMeeting) meeting);
 			data.addPastMeeting(meeting.getId(), (PastMeeting) meeting);
-
-			// add past meetings to the matching contacts
 			for (Contact contact : meeting.getContacts()) {
 				data.getContactsPastMeetings().get(contact).add((PastMeeting) meeting);
 			}
 		}
-
+		addMeetingToCalendar(meeting);
+	}
+	
+	private void addMeetingToCalendar(Meeting meeting) {
 		// add meeting to the date/meeting Map
 		//Try and get the meeting set for the particular date
 		Set<Meeting> meetingsOnDate = data.getMeetingDates().get(meeting.getDate());
@@ -206,12 +200,10 @@ public class ContactManagerImpl extends FileIO implements ContactManager  {
 			meetingsOnDate = new TreeSet<Meeting>(meetingDateComparator);
 
 			// Add the empty set to the meetingDates Map
-//			meetingDates.put(meeting.getDate(), meetingsOnDate);
 			data.addMeetingDate(meeting.getDate(), meetingsOnDate);
 		}
 		//Add the meeting to meetingsOnDate
 		meetingsOnDate.add(meeting);
-
 	}
 
 
@@ -273,7 +265,6 @@ public class ContactManagerImpl extends FileIO implements ContactManager  {
 			addMeeting(newPastMeeting);
 		}
 		data.incrementMeetingId();
-//		meetingId++;
 	}
 
 
@@ -332,28 +323,22 @@ public class ContactManagerImpl extends FileIO implements ContactManager  {
 	private void updateMeeting(Meeting meeting, String text) {
 		if (meeting.getDate().getTime().before(calendar.getTime())) {
 			// meeting has passed
-
 			//Create a new past meeting
 			Meeting newPastMeeting = new PastMeetingImpl(meeting.getId(), meeting.getDate(), meeting.getContacts(), text);
-
-
+			
 			// remove the old meeting from the future meeting data structures
 			data.getMeetingDates().get(meeting.getDate()).remove(meeting);
-
-
 			if (meeting instanceof PastMeeting) {
 
 				for (Contact contact : meeting.getContacts()) {
 					data.getContactsPastMeetings().get(contact).remove(meeting);
 				}
-
 			} else if (meeting instanceof FutureMeeting) {
 
 				for (Contact contact : meeting.getContacts()) {
 					data.getContactsFutureMeetings().get(contact).remove(meeting);
 				}
 			}
-
 			// Add the new past meeting to the correct data structures
 			addMeeting(newPastMeeting);
 		} else {
@@ -382,10 +367,8 @@ public class ContactManagerImpl extends FileIO implements ContactManager  {
 		if (meeting == null) {
 			return null;
 		}
-
 		return meeting;
 	}
-
 
 	/**
 	 * Returns the FUTURE meeting with the requested ID, or null if there is none. 
@@ -475,7 +458,6 @@ public class ContactManagerImpl extends FileIO implements ContactManager  {
 	}
 
 
-
 	/**
 	 * Returns the list of past meetings in which this contact has participated. 
 	 *
@@ -496,7 +478,5 @@ public class ContactManagerImpl extends FileIO implements ContactManager  {
 
 		return result;
 	}
-
-
 
 }

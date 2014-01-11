@@ -16,7 +16,7 @@ import java.util.TreeMap;
  * @author Michael Bragg
  * Contains getters, adders and increment methods.
  */
-public class DataStore implements Serializable {
+public class ManagerData implements Serializable {
 
 	private static final long serialVersionUID = 5186539026664203080L;
 	private int contactId;
@@ -36,7 +36,7 @@ public class DataStore implements Serializable {
 	// Maps from Calendar dates to Sets of Meetings
 	private Map<Calendar, Set<Meeting>> meetingDates = new TreeMap<Calendar, Set<Meeting>>();
 	
-	public DataStore() {
+	public ManagerData() {
 		setContactId(0);
 		setMeetingId(0);
 	}

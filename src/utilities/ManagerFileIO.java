@@ -20,22 +20,22 @@ import java.io.StreamCorruptedException;
  * Contains load(DataStore) and save() methods
  *
  */
-public abstract class FileIO {
+public abstract class ManagerFileIO {
 	
 	private static final String FILENAME = "contacts.txt";
 	
-	protected DataStore load(DataStore data) {
+	protected ManagerData load(ManagerData data) {
 
 		if (!new File(FILENAME).exists()) {
 			// file does not exist or is directory or isn't readable, create a new data store.
-			data = new DataStore();
+			data = new ManagerData();
 		} else {
 			System.out.print("  Loading data...");
 
 			try (FileInputStream fileInput = new FileInputStream(FILENAME);
 					BufferedInputStream bufferedFileInput = new BufferedInputStream(fileInput);	
 					ObjectInputStream d = new ObjectInputStream(bufferedFileInput);) {
-				data = (DataStore) d.readObject();
+				data = (ManagerData) d.readObject();
 			}catch (ClassNotFoundException ex) {
 				System.err.println("Class of a serialized object cannot be found. " + ex);
 			}catch (InvalidClassException ex) {
@@ -54,7 +54,7 @@ public abstract class FileIO {
 
 	}
 	
-	protected void save(DataStore data) {
+	protected void save(ManagerData data) {
 		System.out.println("Saving data...");
 		try (ObjectOutputStream encode = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(FILENAME)));) {
 			encode.writeObject(data);
