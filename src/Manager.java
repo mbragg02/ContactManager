@@ -124,14 +124,14 @@ public class Manager {
 		for (String name : contactNames) {
 			for (Contact contact : manager.getContacts(name)) {
 				contacts.add(contact);
-				Util.println(name + " added to meeting.");
+				Util.println(contact.getName() + " added to meeting.");
 			}
 		}
 		return contacts;
 	}
 
 	private Calendar assignMeetingDate() {
-		boolean valid = true;
+		boolean valid;
 		String userDate;
 		Calendar meetingDate = null;
 
@@ -139,6 +139,7 @@ public class Manager {
 			System.out.print("Please enter a date for the meeting (DD/MM/YYYY HH:MM): ");
 			userDate = getUserInput();
 			if(Util.dateValidater(userDate)) {
+				valid = true;
 				meetingDate = Util.parseDate(userDate);
 			} else {
 				Util.println("Date not valid. Please try again.");
@@ -257,27 +258,41 @@ public class Manager {
 	private void displayFutureMeeting() {
 		String userInput;
 		do {
-			System.out.print("Please enther either a meeting ID, a contact name, or a date one which a meeting is to take place (DD/MM/YYYY hh:mm): ");
+			System.out.print("Please enther either a meeting ID, a contact name, or a date one which a meeting is to take place (DD/MM/YYYY ): ");
 			userInput = getUserInput();
 		} while (userInput.isEmpty());
-
-		if (Util.dateValidater(userInput)) {
+		if (Util.datePatternValidater(userInput))  {
 			displayFutureMeetingFromDate(userInput);
-		} 
-		else if (Character.isDigit(userInput.charAt(0))) {
+		}
+		else if (Util.idValidater(userInput)) {
 			displayFutureMeetingFromId(userInput);
 		} 
-		else {
+		 else {
 			displayFutureMeetingFromContactName(userInput);
 		}
+
 	}
 
 	private void displayFutureMeetingFromDate(String userInput) {
 		// a date has been entered
-		if (manager.getFutureMeetingList(Util.parseDate(userInput)).isEmpty()) {
-			Util.println("No meetings found scheduled for " + userInput + "\n");
+		Calendar meetingDate;
+
+		if(Util.calendarValidater(userInput)) {
+			meetingDate = Util.parseCalendar(userInput);
+			try {
+				Util.dateInFutureCheck(meetingDate);
+			} catch (IllegalArgumentException ex) {
+				Util.println("\nMeeting date is in the past\n");
+				return;
+			}
+			if (manager.getFutureMeetingList(meetingDate).isEmpty()) {
+				Util.println("No meetings found scheduled for " + userInput + "\n");
+			} else {
+				Util.printMeetingList(manager.getFutureMeetingList(meetingDate));
+			}
+
 		} else {
-			Util.printMeetingList(manager.getFutureMeetingList(Util.parseDate(userInput)));
+			Util.println("Date is not valid.");
 		}
 	}
 
@@ -286,7 +301,7 @@ public class Manager {
 		try {
 			Util.printMeeting(manager.getFutureMeeting(Util.toInteger(userInput)));
 		} catch(IllegalArgumentException ex) {
-			Util.println("A meeting with id: " + userInput + " is in the past.\n");
+			Util.println("\nA meeting with id: " + userInput + " is in the past.\n");
 		} catch (NullPointerException ex) {
 			Util.println("No meeting found\n");
 		}
@@ -295,7 +310,7 @@ public class Manager {
 	private void displayFutureMeetingFromContactName(String userInput) {
 		// a contact name has been entered
 		if (manager.getContacts(userInput).isEmpty()) {
-			Util.println("\"" + userInput + "\" is not one of your contacts.\n");
+			Util.println("\n\"" + userInput + "\" is not one of your contacts.\n");
 		} 
 		List<Meeting> futureMeetings = null;
 		for (Contact x : manager.getContacts(userInput)) {
@@ -326,7 +341,7 @@ public class Manager {
 			userInput = getUserInput();
 		} while (userInput.isEmpty());
 
-		if (Character.isDigit(userInput.charAt(0))) {
+		if (Util.idValidater(userInput)) {
 			displayPastMeetingFromId(userInput);
 		} 
 		else {

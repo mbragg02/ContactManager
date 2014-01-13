@@ -27,8 +27,25 @@ public abstract class Util {
 	public static int toInteger(String str) {
 		return Integer.parseInt(str.trim());
 	}
+	
+	public static boolean idValidater(String str) {
+		if (str.matches("[0-9]+")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	// Calendar/Date methods
+	
+	public static boolean datePatternValidater(String str) {
+		if (Character.isDigit(str.charAt(0)) && str.contains("/")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 * Matches a supplied string with a regular expression for the date format:
 	 * DD/MM/YYYY HH:MM
@@ -45,6 +62,21 @@ public abstract class Util {
 		}
 		return result;
 	}
+	
+	public static boolean calendarValidater(String str) {
+		boolean result = false;
+		// DD/MM/YYYY
+		Pattern p = Pattern.compile("([0-2][1-9]|[1-3]0|31)/(0[1-9]|10|11|12)/([0-9]{4})");
+		Matcher m = p.matcher(str);
+		if (m.matches()) {
+			result = true;
+		}
+		return result;
+	}
+	
+
+	
+
 
 	/**
 	 * Returns a Calendar for the given date string
@@ -65,46 +97,46 @@ public abstract class Util {
 		calendar.setTime(newdate);
 		return calendar;
 	}
+	
+	/**
+	 * Returns a Calendar for the given date string
+	 * @param date String.
+	 * @return Calendar
+	 */
+	public static Calendar parseCalendar(String date) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-//	/**
-//	 * Matches a supplied string with a regular expression for the date format:
-//	 * DD/MM/YYYY
-//	 * @param str String to match.
-//	 * @return Boolean. A match or not
-//	 */
-//	private boolean dateMatcher(String str) {
-//		boolean result = false;
-//		// DD/MM/YYYY
-//		Pattern p = Pattern.compile("([0-2][1-9]|[1-3]0|31)/(0[1-9]|10|11|12)/([0-9]{4})");
-//		Matcher m = p.matcher(str);
-//		if (m.matches()) {
-//			result = true;
-//		}
-//		return result;
-//	}
-//
-//
-//
-//	/**
-//	 * Returns a Calendar for the given date string
-//	 * @param date String.
-//	 * @return Calendar
-//	 */
-//	private Calendar getDate(String date) {
-//		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-//
-//		Calendar calendar = Calendar.getInstance();
-//		Date newdate = null;
-//		try {
-//			newdate = dateFormat.parse(date);
-//		} catch (ParseException e) {
-//			System.out.println("Invalid date format");
-//			e.printStackTrace();
-//		}
-//		calendar.setTime(newdate);
-//		return calendar;
-//	}
+		Calendar calendar = Calendar.getInstance();
+		Date newdate = null;
+		try {
+			newdate = dateFormat.parse(date);
+		} catch (ParseException e) {
+			println("Invalid date format");
+			e.printStackTrace();
+		}
+		calendar.setTime(newdate);
+		return calendar;
+	}
+	
 
+	
+	public static void dateInFutureCheck(Calendar date) {
+		Calendar calendar = Calendar.getInstance();
+
+		if (date.getTime().before(calendar.getTime())) {
+			throw new IllegalArgumentException("Meeting is in the Past");
+		}
+	}
+	
+	public static Calendar setCalendarTime(Calendar calendar) {
+		Calendar cal = Calendar.getInstance();
+		cal.clear();
+		int year = calendar.get(Calendar.YEAR);
+		int month = calendar.get(Calendar.MONTH);
+		int date = calendar.get(Calendar.DATE);
+		cal.set(year, month, date);	
+		return cal;
+	}
 
 
 	// Methods to print out information
@@ -141,6 +173,7 @@ public abstract class Util {
 		if (meeting instanceof PastMeeting) {
 			println("notes: "  + ((PastMeeting) meeting).getNotes());
 		}
+		println("");
 	}
 
 	/**

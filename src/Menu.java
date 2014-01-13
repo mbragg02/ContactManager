@@ -71,19 +71,19 @@ public class Menu {
 	 */
 	private void mainMenu(int action) {
 		switch(action) {
-		case 1: // add a new contact
+		case 1: 
 			manager.addContact();
 			break;
-		case 2: // add a new meeting
+		case 2: 
 			manager.addMeeting();
 			break;
-		case 3: // display a contacts details
+		case 3: 
 			manager.displayContactDetails();
 			break;
-		case 4: // display a meetings details
+		case 4: 
 			manager.displayMeetingDetails();
 			break;
-		case 5: // add note to meeting
+		case 5: 
 			manager.addMeetingNote();
 			break;
 		default: 

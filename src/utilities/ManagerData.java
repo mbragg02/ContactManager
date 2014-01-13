@@ -4,8 +4,10 @@ import interfaces.Contact;
 import interfaces.FutureMeeting;
 import interfaces.Meeting;
 import interfaces.PastMeeting;
+
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -92,8 +94,8 @@ public class ManagerData implements Serializable {
 		return contactsPastMeetings;
 	}
 
-	public void addMeetingDate(Calendar date, Set<Meeting> meetings) {
-		this.meetingDates.put(date, meetings);
+	public void addMeetingDate(Calendar calendar, Set<Meeting> meetings) {
+		this.meetingDates.put(calendar, meetings);
 
 	}
 

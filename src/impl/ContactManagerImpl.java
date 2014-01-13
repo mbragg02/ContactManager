@@ -4,6 +4,7 @@ import interfaces.*;
 import utilities.ManagerData;
 import utilities.ManagerFileIO;
 import utilities.MeetingDateComparator;
+import utilities.Util;
 
 import java.util.Calendar;
 import java.util.Comparator;
@@ -191,8 +192,12 @@ public class ContactManagerImpl extends ManagerFileIO implements ContactManager 
 	
 	private void addMeetingToCalendar(Meeting meeting) {
 		// add meeting to the date/meeting Map
+				
+		Calendar calendar = Util.setCalendarTime(meeting.getDate());
+			
+		
 		//Try and get the meeting set for the particular date
-		Set<Meeting> meetingsOnDate = data.getMeetingDates().get(meeting.getDate());
+		Set<Meeting> meetingsOnDate = data.getMeetingDates().get(calendar);
 
 		if (meetingsOnDate == null) {
 			// If there are no meetings on that particular date.
@@ -200,7 +205,7 @@ public class ContactManagerImpl extends ManagerFileIO implements ContactManager 
 			meetingsOnDate = new TreeSet<Meeting>(meetingDateComparator);
 
 			// Add the empty set to the meetingDates Map
-			data.addMeetingDate(meeting.getDate(), meetingsOnDate);
+			data.addMeetingDate(calendar, meetingsOnDate);
 		}
 		//Add the meeting to meetingsOnDate
 		meetingsOnDate.add(meeting);
@@ -302,7 +307,6 @@ public class ContactManagerImpl extends ManagerFileIO implements ContactManager 
 			if (meeting.getDate().getTime().after(calendar.getTime())) {
 				throw new IllegalStateException("Meeting is in the future");
 			}
-
 			// Update the meeting to a past meeting
 			updateMeeting(meeting, text);
 
@@ -426,15 +430,16 @@ public class ContactManagerImpl extends ManagerFileIO implements ContactManager 
 	 * @return the list of meetings 
 	 */
 	@Override
-	public List<Meeting> getFutureMeetingList(Calendar date) {
+	public List<Meeting> getFutureMeetingList(Calendar date) {		
+		Calendar calendar = Util.setCalendarTime(date);
 
-		Set<Meeting> meetings = data.getMeetingDates().get(date);
+		Set<Meeting> meetings = data.getMeetingDates().get(calendar);
 		if (meetings == null) {
 			meetings = new TreeSet<Meeting>();
 		}
 
 		return new LinkedList<Meeting>(meetings);
-	}
+	}	
 
 	/**
 	 * Returns the list of future meetings scheduled with this contact. 
