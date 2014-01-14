@@ -7,7 +7,6 @@ import interfaces.PastMeeting;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

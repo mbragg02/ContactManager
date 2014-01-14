@@ -330,8 +330,10 @@ public class ContactManagerImpl extends ManagerFileIO implements ContactManager 
 			//Create a new past meeting
 			Meeting newPastMeeting = new PastMeetingImpl(meeting.getId(), meeting.getDate(), meeting.getContacts(), text);
 			
+			Calendar calendar = Util.setCalendarTime(meeting.getDate());
+			
 			// remove the old meeting from the future meeting data structures
-			data.getMeetingDates().get(meeting.getDate()).remove(meeting);
+			data.getMeetingDates().get(calendar).remove(meeting);
 			if (meeting instanceof PastMeeting) {
 
 				for (Contact contact : meeting.getContacts()) {
