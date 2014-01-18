@@ -102,4 +102,5 @@ public class ManagerData implements Serializable {
 		return meetingDates;
 	}
 	
+	
 }

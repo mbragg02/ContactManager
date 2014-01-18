@@ -1,13 +1,6 @@
-import impl.ContactManagerImpl;
 import utilities.Util;
 import interfaces.*;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Actions to perform in Contact Manager
@@ -19,9 +12,9 @@ public class Manager {
 	private ContactManager manager;
 	private Scanner userInput;
 
-	public Manager() {
+	public Manager(ContactManager manager) {
 		userInput = new Scanner(System.in);
-		manager = new ContactManagerImpl();
+		this.manager = manager;
 	}
 
 	/**
@@ -386,7 +379,7 @@ public class Manager {
 	/**
 	 * Choice 5. Add a note to a meeting
 	 */
-	void addMeetingNote() {
+	protected void addMeetingNote() {
 		int meetingId = assignMeetingId();
 		String meetingNote = assignMeetingNote();
 
@@ -416,7 +409,7 @@ public class Manager {
 	/**
 	 * Choice (6) EXIT
 	 */
-	void save(){
+	protected void save(){
 		manager.flush();
 	}
 

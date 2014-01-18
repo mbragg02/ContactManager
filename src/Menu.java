@@ -13,13 +13,13 @@ public class Menu {
 	private boolean running;
 	private Scanner userInput;
 
-	public Menu() {
-		manager = new Manager();
+	public Menu(Manager manager) {
+		this.manager = manager;
 		running = true;
 		userInput = new Scanner(System.in);
 	}
 
-	public void launch() {
+	public void launchMenu() {
 		Util.println("  Welcome to Contact Managaer v1");
 		menuLoop();
 	}

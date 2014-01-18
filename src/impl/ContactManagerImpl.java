@@ -1,36 +1,25 @@
 package impl;
 
 import interfaces.*;
-import utilities.ManagerData;
-import utilities.ManagerFileIO;
-import utilities.MeetingDateComparator;
-import utilities.Util;
-
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
+import utilities.*;
+import java.util.*;
 
 /**
  * A class to manage Contacts and Meetings.
  * @author Michael Bragg
  */
-public class ContactManagerImpl extends ManagerFileIO implements ContactManager  {
+public class ContactManagerImpl implements ContactManager  {
 
 	private Calendar calendar;
 	private Comparator<Meeting> meetingDateComparator;
 	private ManagerData data;
 	
-	public ContactManagerImpl() {	
+	public ContactManagerImpl(ManagerData data) {	
 		calendar = new GregorianCalendar(); 
 		meetingDateComparator = new MeetingDateComparator<Meeting>();
-		data = load(data);
+		this.data = data;
 	}
+
 
 	/**
 	 * Save all data to disk. 
@@ -39,7 +28,7 @@ public class ContactManagerImpl extends ManagerFileIO implements ContactManager 
 	 */
 	@Override
 	public void flush() {
-		save(data);
+		ManagerFileIO.save(data);
 	}
 
 

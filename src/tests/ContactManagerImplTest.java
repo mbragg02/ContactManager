@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import utilities.ManagerData;
+
 // Note
 public class ContactManagerImplTest {
 
@@ -26,7 +28,7 @@ public class ContactManagerImplTest {
 
 	@Before
 	public void setUp() {
-		contactManagerTest = new ContactManagerImpl();
+		contactManagerTest = new ContactManagerImpl(new ManagerData());	
 
 		// Create 3 test contacts
 		contactManagerTest.addNewContact("adam", "adams notes");
