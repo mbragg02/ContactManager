@@ -1,24 +1,12 @@
 package tests;
 
 import static org.junit.Assert.*;
-
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
+import org.junit.*;
+import java.util.*;
 import impl.*;
 import interfaces.*;
-
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import utilities.ManagerData;
 
-// Note
 public class ContactManagerImplTest {
 
 	private static ContactManager contactManagerTest;
@@ -43,11 +31,6 @@ public class ContactManagerImplTest {
 		
 		// create a contact set with the 1st contact in
 		contacts = contactManagerTest.getContacts(0);
-	}
-
-
-	@Ignore
-	public void testFlush() {
 	}
 
 	// Contacts setters
