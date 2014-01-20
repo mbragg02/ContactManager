@@ -1,18 +1,6 @@
 package utilities;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InvalidClassException;
-import java.io.NotSerializableException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
-import java.io.StreamCorruptedException;
+import java.io.*;
 
 /**
  * Class for File reading and writing methods.
@@ -33,22 +21,21 @@ public class ManagerFileIO {
 						BufferedInputStream bufferedFileInput = new BufferedInputStream(fileInput);	
 						ObjectInputStream d = new ObjectInputStream(bufferedFileInput);) {
 					data = (ManagerData) d.readObject();
-				}catch (ClassNotFoundException ex) {
+				} catch (ClassNotFoundException ex) {
 					System.err.println("Class of a serialized object cannot be found. " + ex);
-				}catch (InvalidClassException ex) {
+				} catch (InvalidClassException ex) {
 					System.err.println("Something is wrong with a class used by serialization. " + ex);
-				}catch (StreamCorruptedException ex) {
+				} catch (StreamCorruptedException ex) {
 					System.err.println("Control information in the stream is inconsistent. " + ex);
 				} catch (OptionalDataException ex) {
 					System.err.println("Primitive data was found in the stream instead of objects. " + ex);
-				}catch (IOException ex) {
+				} catch (IOException ex) {
 					System.err.println("I/O error occured. " + ex);
 				}
 				System.out.println("Complete");
 			} 
 		
 		return data; 
-
 	}
 
 	public static void save(ManagerData data) {

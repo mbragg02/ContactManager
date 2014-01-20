@@ -1,20 +1,13 @@
 package utilities;
 
 import interfaces.*;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.text.*;
+import java.util.*;
+import java.util.regex.*;
 
 /**
  * Methods to support the Main actions for Contact Manager
  * @author Michael Bragg
- *
  */
 public abstract class Util {
 
@@ -22,12 +15,17 @@ public abstract class Util {
 	 * Converts a string to a int.
 	 * @param str String to convert
 	 * @return int representation of the supplied string.
-	 * @throws NumberFormatException
+	 * @throws NumberFormatException if the string does not contain a parsable integer.
 	 */
-	public static int toInteger(String str) {
+	public static int toInteger(String str) throws NumberFormatException {
 		return Integer.parseInt(str.trim());
 	}
 	
+	/**
+	 * Checks if a given string contains only digits.
+	 * @param str
+	 * @return boolean
+	 */
 	public static boolean idValidater(String str) {
 		if (str.matches("[0-9]+")) {
 			return true;
@@ -37,7 +35,11 @@ public abstract class Util {
 	}
 
 	// Calendar/Date methods
-	
+	/**
+	 * Method to distinguish between a id string (a string containing just digits) and a date string (a string containing digits and forward slashes)
+	 * @param str String to check.
+	 * @return Boolean. True if it is a date string. Otherwise false.
+	 */
 	public static boolean datePatternValidater(String str) {
 		if (Character.isDigit(str.charAt(0)) && str.contains("/")) {
 			return true;
@@ -51,8 +53,9 @@ public abstract class Util {
 	 * DD/MM/YYYY HH:MM
 	 * @param str String to match.
 	 * @return Boolean. A match or not
+	 * @throws PatternSyntaxException If the expression's syntax is invalid
 	 */
-	public static boolean dateValidater(String str) {
+	public static boolean dateValidater(String str) throws PatternSyntaxException {
 		boolean result = false;
 		// DD/MM/YYYY HH/MM
 		Pattern p = Pattern.compile("([0-2][1-9]|[1-3]0|31)/(0[1-9]|10|11|12)/([0-9]{4})\\s([0-1][0-9]|2[0-3]):([0-5][0-9])");
@@ -63,7 +66,14 @@ public abstract class Util {
 		return result;
 	}
 	
-	public static boolean calendarValidater(String str) {
+	/**
+	 * Matches a supplied string with a regular expression for the date format:
+	 * DD/MM/YYYY
+	 * @param str
+	 * @return Boolean. A match or not
+	 * @throws PatternSyntaxException If the expression's syntax is invalid
+	 */
+	public static boolean calendarValidater(String str) throws PatternSyntaxException {
 		boolean result = false;
 		// DD/MM/YYYY
 		Pattern p = Pattern.compile("([0-2][1-9]|[1-3]0|31)/(0[1-9]|10|11|12)/([0-9]{4})");
@@ -73,13 +83,9 @@ public abstract class Util {
 		}
 		return result;
 	}
-	
-
-	
-
 
 	/**
-	 * Returns a Calendar for the given date string
+	 * Returns a Calendar for the given date string, with the format DD/MM/YYYY HH/MM
 	 * @param date String.
 	 * @return Calendar
 	 */
@@ -99,7 +105,7 @@ public abstract class Util {
 	}
 	
 	/**
-	 * Returns a Calendar for the given date string
+	 * Returns a Calendar for the given date string, with the format DD/MM/YYYY
 	 * @param date String.
 	 * @return Calendar
 	 */
@@ -118,9 +124,12 @@ public abstract class Util {
 		return calendar;
 	}
 	
-
-	
-	public static void dateInFutureCheck(Calendar date) {
+	/**
+	 * Throws an IllegalArgumentException if a supplied date is in the past.
+	 * @param date
+	 * @throws IllegalArgumentException if a supplied date is in the past.
+	 */
+	public static void dateInFutureCheck(Calendar date) throws IllegalArgumentException {
 		Calendar calendar = Calendar.getInstance();
 
 		if (date.getTime().before(calendar.getTime())) {
@@ -128,6 +137,11 @@ public abstract class Util {
 		}
 	}
 	
+	/**
+	 * Returns a cleared calendar object with just the day/month/year data from the supplied calendar.
+	 * @param calendar
+	 * @return Calendar
+	 */
 	public static Calendar setCalendarTime(Calendar calendar) {
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
@@ -148,6 +162,7 @@ public abstract class Util {
 	public static void println(String str){
 		System.out.println(str);
 	}
+
 	/**
 	 * Method to print out a set of contacts
 	 * @param contacts Set<Contact> contacts

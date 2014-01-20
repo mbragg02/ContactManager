@@ -4,13 +4,8 @@ import interfaces.Contact;
 import interfaces.FutureMeeting;
 import interfaces.Meeting;
 import interfaces.PastMeeting;
-
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Class to store all the data created in Contact Manager
@@ -41,7 +36,9 @@ public class ManagerData implements Serializable {
 		setContactId(0);
 		setMeetingId(0);
 	}
-
+	
+	// Getters and setters for data structures
+	
 	public int getContactId() {
 		return contactId;
 	}
