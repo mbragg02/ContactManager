@@ -1,8 +1,13 @@
+package main;
 import utilities.ManagerData;
 import utilities.ManagerFileIO;
 import impl.ContactManagerImpl;
 import interfaces.ContactManager;
 
+/**
+ * Class with static methods to return new objects for Contact Manager and tests
+ * @author Michael Bragg
+ */
 public class Factory {
 	
 	public static Menu build() {
@@ -25,6 +30,11 @@ public class Factory {
 	private static ManagerData newData() {
 		return new ManagerData();
 	}
+	
+	public static ContactManager buildTestEnviroment() {
+		return new ContactManagerImpl(new ManagerData());
+	}
+	
 	
 	
 

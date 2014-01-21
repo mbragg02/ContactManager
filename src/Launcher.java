@@ -1,3 +1,5 @@
+import main.Factory;
+
 /**
  * Contacts Manager Application v1.1
  * PIJ 2013/2014

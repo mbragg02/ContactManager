@@ -1,22 +1,25 @@
 package tests;
 
 import static org.junit.Assert.*;
+import main.Factory;
 import org.junit.*;
 import java.util.*;
 import impl.*;
 import interfaces.*;
-import utilities.ManagerData;
+//import utilities.ManagerData;
 
 public class ContactManagerImplTest {
 
-	private static ContactManager contactManagerTest;
+	private ContactManager contactManagerTest;
 	private Set<Contact> contacts;
 	private Calendar futureDate;
 	private Calendar pastDate;
 
 	@Before
 	public void setUp() {
-		contactManagerTest = new ContactManagerImpl(new ManagerData());	
+//		contactManagerTest = new ContactManagerImpl(new ManagerData());	
+		contactManagerTest = Factory.buildTestEnviroment();
+
 
 		// Create 3 test contacts
 		contactManagerTest.addNewContact("adam", "adams notes");
@@ -188,7 +191,7 @@ public class ContactManagerImplTest {
 		List<Meeting> futureMeetingList = contactManagerTest.getFutureMeetingList(contact.iterator().next());
 		
 		// Test if the two lists contain the same contact.
-		assertEquals(expectedFutureMeetingList.contains(contact), futureMeetingList.contains(contact));	
+		assertEquals(expectedFutureMeetingList.iterator().next().getId(), futureMeetingList.iterator().next().getId());	
 		
 	}
 	
@@ -234,7 +237,7 @@ public class ContactManagerImplTest {
 		List<PastMeeting> pastMeetingList = contactManagerTest.getPastMeetingList(contact.iterator().next());
 		
 		// Test if the two lists contain the same contact.
-		assertEquals(expectedPastMeetingList.contains(contact), pastMeetingList.contains(contact));	
+		assertEquals(expectedPastMeetingList.iterator().next().getId(), pastMeetingList.iterator().next().getId());	
 	}
 	
 	@Test(expected = IllegalArgumentException.class)

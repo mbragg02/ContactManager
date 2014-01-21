@@ -1,3 +1,4 @@
+package main;
 import utilities.Util;
 import interfaces.*;
 import java.util.*;
@@ -437,7 +438,7 @@ public class Manager {
 			System.out.print("For a future meeting type [F], or for a meeting that has happened in the past, [P]: ");
 			String choice = getUserInput();
 			if (choice.equals("f") || choice.equals("p")) {
-				if (choice.equals("f") ? result = true : false);
+				result = (choice.equals("f") ? true : false);
 				running = false;
 			} else {
 				Util.println("Not a valid choice. Please try again");

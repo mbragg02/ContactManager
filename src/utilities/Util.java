@@ -93,14 +93,13 @@ public abstract class Util {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy kk:mm");
 
 		Calendar calendar = Calendar.getInstance();
-		Date newdate = null;
 		try {
-			newdate = dateFormat.parse(date);
+			Date newdate = dateFormat.parse(date);
+			calendar.setTime(newdate);
 		} catch (ParseException e) {
 			println("Invalid date format");
 			e.printStackTrace();
 		}
-		calendar.setTime(newdate);
 		return calendar;
 	}
 	
@@ -113,14 +112,14 @@ public abstract class Util {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 		Calendar calendar = Calendar.getInstance();
-		Date newdate = null;
 		try {
-			newdate = dateFormat.parse(date);
+			Date newdate = dateFormat.parse(date);
+			calendar.setTime(newdate);
+
 		} catch (ParseException e) {
 			println("Invalid date format");
 			e.printStackTrace();
 		}
-		calendar.setTime(newdate);
 		return calendar;
 	}
 	
