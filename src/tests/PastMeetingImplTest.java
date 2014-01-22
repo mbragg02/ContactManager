@@ -1,11 +1,14 @@
 package tests;
 
-import static org.junit.Assert.*;
-import java.util.*;
+import static org.junit.Assert.assertEquals;
 import impl.ContactImpl;
 import impl.PastMeetingImpl;
 import interfaces.Contact;
 import interfaces.PastMeeting;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 

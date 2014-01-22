@@ -5,7 +5,11 @@ import interfaces.FutureMeeting;
 import interfaces.Meeting;
 import interfaces.PastMeeting;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Class to store all the data created in Contact Manager

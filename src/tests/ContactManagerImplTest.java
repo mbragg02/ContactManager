@@ -1,11 +1,26 @@
 package tests;
 
-import static org.junit.Assert.*;
-import org.junit.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import impl.ContactImpl;
+import impl.ContactManagerImpl;
+import impl.FutureMeetingImpl;
+import impl.PastMeetingImpl;
+import interfaces.Contact;
+import interfaces.ContactManager;
+import interfaces.FutureMeeting;
+import interfaces.Meeting;
+import interfaces.PastMeeting;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import org.junit.Before;
+import org.junit.Test;
 import utilities.ManagerData;
-import java.util.*;
-import impl.*;
-import interfaces.*;
 
 public class ContactManagerImplTest {
 

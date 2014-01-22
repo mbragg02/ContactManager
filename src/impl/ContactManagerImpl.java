@@ -1,8 +1,15 @@
 package impl;
 
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import interfaces.*;
 import utilities.*;
-import java.util.*;
 
 /**
  * A class to manage Contacts and Meetings.
