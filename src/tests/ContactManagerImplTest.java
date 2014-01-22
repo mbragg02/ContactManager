@@ -1,14 +1,9 @@
 package tests;
 
 import static org.junit.Assert.*;
-import main.ContactManagerFactory;
-
 import org.junit.*;
-
 import utilities.ManagerData;
-
 import java.util.*;
-
 import impl.*;
 import interfaces.*;
 

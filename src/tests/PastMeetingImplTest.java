@@ -1,19 +1,12 @@
 package tests;
 
 import static org.junit.Assert.*;
-
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.*;
 import impl.ContactImpl;
 import impl.PastMeetingImpl;
 import interfaces.Contact;
 import interfaces.PastMeeting;
-
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class PastMeetingImplTest {
