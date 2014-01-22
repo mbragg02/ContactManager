@@ -6,7 +6,6 @@ import utilities.Util;
 /**
  * Main menu loop for Contact Manager
  * @author Michael Bragg
- *
  */
 public class Menu {
 
@@ -19,7 +18,7 @@ public class Menu {
 		running = true;
 		userInput = new Scanner(System.in);
 	}
-
+	
 	public void launchMenu() {
 		Util.println("  Welcome to Contact Managaer v1");
 		menuLoop();

@@ -12,7 +12,7 @@ public class ContactImplTest {
 	private String name = "John";
 	
 	@Before
-	public void init() {
+	public void setUp() {
 		test = new ContactImpl(12345, name, note);
 	}
 
@@ -51,9 +51,16 @@ public class ContactImplTest {
 		assertNull(name);
 	}
 	@Test
-	public void emptyNotes() {
-		// If there are no notes then an empty string should be returned.
+	public void nullNotes() {
+		// If notes are null, then an empty string should be returned.
 		test = new ContactImpl(1, null, null);
+		String notes = test.getNotes();
+		assertEquals("", notes);
+	}
+	@Test
+	public void emptyNotes() {
+		// If there are no notes, then an empty string should be returned.
+		test = new ContactImpl(1, null, "");
 		String notes = test.getNotes();
 		assertEquals("", notes);
 	}

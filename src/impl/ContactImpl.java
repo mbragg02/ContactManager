@@ -36,19 +36,11 @@ public class ContactImpl implements Contact, Serializable {
 		this.name = name;
 	}
 	
-	/**
-	 * Returns the ID of the contact.
-	 * @return an int for the ID of the contact.
-	 */
 	@Override
 	public int getId() {
 		return this.id;
 	}
 
-	/**
-	 * Returns the name of the contact.
-	 * @return a String with the name of the contact.
-	 */
 	@Override
 	public String getName() {
 		return this.name;
@@ -72,15 +64,9 @@ public class ContactImpl implements Contact, Serializable {
 		return result;
 	}
 
-	/**
-	 * Add notes about the contact. 
-	 *
-	 * @param String. note the notes to be added 
-	 */
 	@Override
 	public void addNotes(String note) {
 		this.note = note;
 	}
 	
-
 }

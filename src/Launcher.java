@@ -1,4 +1,4 @@
-import main.Factory;
+import main.ContactManagerFactory;
 
 /**
  * Contacts Manager Application v1.1
@@ -8,7 +8,6 @@ import main.Factory;
 public class Launcher {
 
 	public static void main(String[] args) {
-		Factory.build().launchMenu();
+		ContactManagerFactory.getInstance().getBuild().launchMenu();
 	}
-
 }

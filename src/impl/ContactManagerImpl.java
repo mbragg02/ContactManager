@@ -184,7 +184,6 @@ public class ContactManagerImpl implements ContactManager  {
 				
 		Calendar calendar = Util.setCalendarTime(meeting.getDate());
 			
-		
 		//Try and get the meeting set for the particular date
 		Set<Meeting> meetingsOnDate = data.getMeetingDates().get(calendar);
 
@@ -227,7 +226,6 @@ public class ContactManagerImpl implements ContactManager  {
 			addMeeting(newFutureMeeting);
 
 			result = newFutureMeeting.getId();
-
 		}
 		data.incrementMeetingId();
 		return result;
@@ -260,8 +258,6 @@ public class ContactManagerImpl implements ContactManager  {
 		}
 		data.incrementMeetingId();
 	}
-
-
 
 	/**
 	 * Add notes to a meeting. 
@@ -341,8 +337,6 @@ public class ContactManagerImpl implements ContactManager  {
 		}
 	}
 
-
-
 	// Meetings getters
 	/**
 	 * Returns the PAST meeting with the requested ID, or null if it there is none. 
@@ -378,14 +372,9 @@ public class ContactManagerImpl implements ContactManager  {
 		if(data.getPastMeetings().containsKey(id)) {
 			throw new IllegalArgumentException("There is a meeting with that ID in the past");
 		}
-
-		FutureMeeting meeting = data.getFutureMeetings().get(id);
-
-		if (meeting == null) {
-			return null;
-		}
-
-		return meeting;
+		
+		// returns null if there are none
+		return data.getFutureMeetings().get(id);
 	}
 
 
@@ -399,12 +388,13 @@ public class ContactManagerImpl implements ContactManager  {
 	public Meeting getMeeting(int id) {
 
 		//  java.util.Map.get returns null if the map contains no mapping for the key
-		Meeting meeting = data.getPastMeetings().get(id);
+		Meeting pastMeeting = data.getPastMeetings().get(id);
 
-		if (meeting == null) {
+		if (pastMeeting == null) {
+			// No past meeting with the ID; so try return a future meeting. Return NULL if none found.
 			return data.getFutureMeetings().get(id);
 		} else {
-			return meeting;
+			return pastMeeting;
 		}
 
 	}
@@ -471,7 +461,6 @@ public class ContactManagerImpl implements ContactManager  {
 		checkContactIsValid(contact);
 
 		List<PastMeeting> result = new LinkedList<PastMeeting>(data.getContactsPastMeetings().get(contact));
-
 		return result;
 	}
 

@@ -25,7 +25,7 @@ public class PastMeetingImplTest {
 	private String notes;
 
 	@Before
-	public void init() {
+	public void setUp() {
 		id = 123;
 		notes = "meeting notes";
 		date = new GregorianCalendar();
@@ -33,10 +33,7 @@ public class PastMeetingImplTest {
 		members.add(new ContactImpl(1, "John", "Note test"));
 		test = new PastMeetingImpl(id, date, members, notes);
 	}
-	@Ignore
-	public void testPastMeetingImpl() {
-		fail("Not yet implemented");
-	}
+
 
 	@Test
 	public void testGetNotes() {

@@ -21,7 +21,7 @@ public class MeetingImplTest {
 	private int id;
 	
 	@Before
-	public void init() {
+	public void setUp() {
 		id = 12345;
 		date = new GregorianCalendar();
 		members = new HashSet<Contact>();

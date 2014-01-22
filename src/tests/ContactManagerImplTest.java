@@ -1,12 +1,16 @@
 package tests;
 
 import static org.junit.Assert.*;
-import main.Factory;
+import main.ContactManagerFactory;
+
 import org.junit.*;
+
+import utilities.ManagerData;
+
 import java.util.*;
+
 import impl.*;
 import interfaces.*;
-//import utilities.ManagerData;
 
 public class ContactManagerImplTest {
 
@@ -17,9 +21,7 @@ public class ContactManagerImplTest {
 
 	@Before
 	public void setUp() {
-//		contactManagerTest = new ContactManagerImpl(new ManagerData());	
-		contactManagerTest = Factory.buildTestEnviroment();
-
+		contactManagerTest = new ContactManagerImpl(new ManagerData());
 
 		// Create 3 test contacts
 		contactManagerTest.addNewContact("adam", "adams notes");
@@ -65,7 +67,8 @@ public class ContactManagerImplTest {
 		expected.add(contactManagerTest.getContacts(0).iterator().next());
 		assertEquals(expected, contactManagerTest.getContacts(0));
 	}
-	// Test IDs passed that are not recognized by the contacts manager
+	
+	// Test IDs passed that are not recognised by the contacts manager
 	@Test(expected = IllegalArgumentException.class)
 	public void getContactsIntArrayIllegalArg() {
 		contactManagerTest.getContacts(999);
@@ -73,9 +76,7 @@ public class ContactManagerImplTest {
 
 	@Test
 	public void testGetContactsString() {
-//		Set<Contact> expected = contactManagerTest.getContacts(0);
 		Set<Contact> actual = contactManagerTest.getContacts("adam");
-//		assertTrue(contacts.equals(actual));
 		assertEquals(contacts, actual);
 	}
 
@@ -92,11 +93,6 @@ public class ContactManagerImplTest {
 	public void getContactNull() {
 		contactManagerTest.getContacts();
 	}
-
-
-
-
-
 
 
 	// Future Meetings setters

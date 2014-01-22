@@ -41,23 +41,11 @@ public class MeetingImpl implements Meeting, Serializable {
 		this.members = members;
 	}
 	
-	
-	/**
-	 * Returns the id of the meeting. 
-	 *
-	 * @return the id of the meeting 
-	 */
 	@Override
 	public int getId() {
 		return this.id;
 	}
 	
-	
-	/**
-	 * Return the date of the meeting. 
-	 *
-	 * @return Calendar. The date of the meeting. 
-	 */
 	@Override
 	public Calendar getDate() {
 		return this.date;
