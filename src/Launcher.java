@@ -6,7 +6,6 @@ import main.ContactManagerFactory;
  * @author Michael Bragg
  */
 public class Launcher {
-
 	public static void main(String[] args) {
 		ContactManagerFactory.getInstance().getBuild().launchMenu();
 	}
