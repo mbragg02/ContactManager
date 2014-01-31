@@ -2,11 +2,13 @@ package tests;
 
 import static org.junit.Assert.*;
 import impl.ContactImpl;
+import interfaces.Contact;
+
 import org.junit.Before;
 import org.junit.Test;
 
 public class ContactImplTest {
-	private ContactImpl test;
+	private Contact test;
 	private String note = "Notes test";
 	private String name = "John";
 	
@@ -35,7 +37,6 @@ public class ContactImplTest {
 		String output = test.getNotes();
 		String expected = note;
 		assertEquals(output, expected);
-
 	}
 
 	@Test
@@ -49,6 +50,7 @@ public class ContactImplTest {
 		String name = test.getName();
 		assertNull(name);
 	}
+	
 	@Test
 	public void nullNotes() {
 		// If notes are null, then an empty string should be returned.
@@ -56,6 +58,7 @@ public class ContactImplTest {
 		String notes = test.getNotes();
 		assertEquals("", notes);
 	}
+	
 	@Test
 	public void emptyNotes() {
 		// If there are no notes, then an empty string should be returned.
@@ -63,6 +66,4 @@ public class ContactImplTest {
 		String notes = test.getNotes();
 		assertEquals("", notes);
 	}
-
-
 }

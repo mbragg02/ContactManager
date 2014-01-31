@@ -4,16 +4,19 @@ import static org.junit.Assert.*;
 import impl.ContactImpl;
 import impl.MeetingImpl;
 import interfaces.Contact;
+import interfaces.Meeting;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 
 public class MeetingImplTest {
 
-	private MeetingImpl test;
+	private Meeting test;
 	private Set<Contact> members;
 	private Calendar date;
 	private int id;

@@ -1,6 +1,7 @@
 package impl;
 
 import interfaces.Contact;
+
 import java.io.Serializable;
 
 /**
@@ -68,5 +69,7 @@ public class ContactImpl implements Contact, Serializable {
 	public void addNotes(String note) {
 		this.note = note;
 	}
+
+
 	
 }

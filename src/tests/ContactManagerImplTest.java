@@ -186,7 +186,7 @@ public class ContactManagerImplTest {
 	public void testGetFutureMeetingListContact() {
 		// Create a new future meeting and add it to a new past meeting list
 		FutureMeeting newFutureMeeting = new FutureMeetingImpl(0, futureDate, contacts);
-		List<FutureMeeting> expectedFutureMeetingList = new LinkedList<FutureMeeting>();
+		List<Meeting> expectedFutureMeetingList = new LinkedList<Meeting>();
 		expectedFutureMeetingList.add(newFutureMeeting);
 		
 		// Add the same future meeting to contactManagerTest
@@ -196,8 +196,8 @@ public class ContactManagerImplTest {
 		// get the futureMeetingList for the same contact (the First contact added in the @before initialise)
 		List<Meeting> futureMeetingList = contactManagerTest.getFutureMeetingList(contact.iterator().next());
 		
-		// Test if the two lists contain the same contact.
-		assertEquals(expectedFutureMeetingList.iterator().next().getId(), futureMeetingList.iterator().next().getId());	
+		// Test if two meetings are equal
+		assertEquals(expectedFutureMeetingList.iterator().next(), futureMeetingList.iterator().next());	
 		
 	}
 	
@@ -242,8 +242,8 @@ public class ContactManagerImplTest {
 		// get the pastMeetingList for the same contact (the First contact added in the @before initialise)
 		List<PastMeeting> pastMeetingList = contactManagerTest.getPastMeetingList(contact.iterator().next());
 		
-		// Test if the two lists contain the same contact.
-		assertEquals(expectedPastMeetingList.iterator().next().getId(), pastMeetingList.iterator().next().getId());	
+		// Test if the two meetings are equal
+		assertEquals(expectedPastMeetingList.iterator().next(), pastMeetingList.iterator().next());	
 	}
 	
 	@Test(expected = IllegalArgumentException.class)

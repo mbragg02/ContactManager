@@ -6,7 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ ContactImplTest.class, ContactManagerImplTest.class,
-		MeetingImplTest.class, PastMeetingImplTest.class })
+		MeetingImplTest.class, PastMeetingImplTest.class, UtilTest.class })
 public class AllTests {
 
 }

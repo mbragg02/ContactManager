@@ -60,9 +60,8 @@ public abstract class Util {
 	 * DD/MM/YYYY HH:MM
 	 * @param str String to match.
 	 * @return Boolean. A match or not
-	 * @throws PatternSyntaxException If the expression's syntax is invalid
 	 */
-	public static boolean dateValidater(String str) throws PatternSyntaxException {
+	public static boolean dateValidater(String str){
 		boolean result = false;
 		// DD/MM/YYYY HH/MM
 		Pattern p = Pattern.compile("([0-2][1-9]|[1-3]0|31)/(0[1-9]|10|11|12)/([0-9]{4})\\s([0-1][0-9]|2[0-3]):([0-5][0-9])");
@@ -102,6 +101,7 @@ public abstract class Util {
 		Calendar calendar = Calendar.getInstance();
 		try {
 			Date newdate = dateFormat.parse(date);
+			
 			calendar.setTime(newdate);
 		} catch (ParseException e) {
 			println("Invalid date format");
